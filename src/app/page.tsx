@@ -61,8 +61,10 @@ export default async function Home() {
   const historyParagraphs: string[] = settings?.historyText
     ? settings.historyText.split('\n').filter((p: string) => p.trim().length > 0)
     : [
-        'Tudo começou de forma leve e genuína, descobrindo aos poucos que o nosso lugar favorito no mundo era sempre ao lado um do outro. Entre conversas sem pressa, olhares cúmplices e sonhos compartilhados, fomos construindo dia após dia o amor que hoje nos guia.',
-        'O nosso Chá de Panela é um capítulo muito especial no caminho até o altar. Mais do que montar o nosso futuro lar, queremos celebrar a vida e brindar este momento ao lado de quem realmente faz parte da nossa história. Preparem-se para uma tarde cheia de abraços, boas risadas e memórias que guardaremos para sempre!',
+        'Resumir a história de duas pessoas que se amam não é fácil mas falar sobre nós dois é. Existe um propósito na nossa união e, desde sempre, dizemos sim ao nosso amor.',
+        'Gostamos de ideias diferentes, somos autênticos, gostamos da companhia um do outro e, principalmente, amamos vivenciar novas experiências juntos. Gostamos de rir e compartilhar o melhor da vida ao lado de Cristo.',
+        'Fomos chamados para conhecê-lo e fazê-lo conhecido, formar nossa família e curtir uma boa noite de pipoca.',
+        'E vocês testemunharão a cena mais linda das nossas vidas: o início da nossa família.',
       ];
 
   const activities = event?.activities || [
