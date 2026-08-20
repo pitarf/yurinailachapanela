@@ -47,32 +47,35 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
 
   if (isFinished) {
     return (
-      <div className="text-center font-serif text-xl sm:text-2xl tracking-widest text-zinc-800">
-        O GRANDE DIA CHEGOU! 🎉
-      </div>
+      <span className="text-xs sm:text-sm font-sans font-semibold tracking-wider text-zinc-800 uppercase">
+        O Grande Dia Chegou! 🎉
+      </span>
     );
   }
 
   const items = [
-    { value: displayTime.days, label: 'DIAS' },
-    { value: displayTime.hours, label: 'HORAS' },
-    { value: displayTime.minutes, label: 'MIN' },
-    { value: displayTime.seconds, label: 'SEG' },
+    { value: displayTime.days, label: 'dias' },
+    { value: displayTime.hours, label: 'horas' },
+    { value: displayTime.minutes, label: 'min' },
+    { value: displayTime.seconds, label: 'seg' },
   ];
 
   return (
-    <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 select-none w-full max-w-md mx-auto">
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl py-2 px-1 sm:p-3 flex flex-col items-center justify-center shadow-xs"
-        >
-          <div className="font-serif text-xl sm:text-3xl md:text-4xl font-normal tracking-tight text-zinc-900 dark:text-white tabular-nums">
+    <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-600 select-none">
+      <span className="text-[9px] sm:text-[10px] tracking-widest font-sans uppercase text-zinc-400 font-semibold mr-1">
+        Faltam:
+      </span>
+      {items.map((item, idx) => (
+        <div key={item.label} className="inline-flex items-baseline gap-0.5">
+          <span className="font-serif text-base sm:text-lg font-medium text-zinc-900 tabular-nums">
             {item.value.toString().padStart(2, '0')}
-          </div>
-          <div className="text-[8px] sm:text-[9px] tracking-widest font-sans uppercase font-semibold text-zinc-400 dark:text-zinc-500 mt-0.5">
+          </span>
+          <span className="text-[9px] font-sans text-zinc-400 font-normal">
             {item.label}
-          </div>
+          </span>
+          {idx < items.length - 1 && (
+            <span className="text-zinc-300 ml-1 text-xs select-none">•</span>
+          )}
         </div>
       ))}
     </div>

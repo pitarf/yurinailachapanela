@@ -87,43 +87,48 @@ export default async function Home() {
       {/* Header com Menu Hamburguer no Mobile e Navegação Elegante no Desktop */}
       <Header />
 
-      {/* Hero Section - Enquadramento Coeso & Proporcional */}
+      {/* Hero Section - Título & Nomes como Protagonistas */}
       <section className="relative w-full flex flex-col lg:flex-row items-stretch border-b border-zinc-100 bg-white">
         {/* Text Area */}
-        <div className="flex-1 flex flex-col justify-center p-5 sm:p-8 md:p-12 lg:p-16 space-y-5 sm:space-y-6">
-          <div className="space-y-2 sm:space-y-2.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full text-[9px] sm:text-[10px] tracking-widest font-sans text-zinc-600 uppercase font-medium">
+        <div className="flex-1 flex flex-col justify-center p-6 sm:p-10 md:p-14 lg:p-20 space-y-6 sm:space-y-8">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-zinc-100/90 rounded-full text-[10px] sm:text-xs tracking-[0.2em] font-sans text-zinc-600 uppercase font-semibold">
               <span>Save the date</span>
-              <span>•</span>
-              <span className="font-semibold text-zinc-900">{new Date(eventDate).toLocaleDateString('pt-BR')}</span>
+              <span className="text-zinc-400">•</span>
+              <span className="text-zinc-950 font-bold">{new Date(eventDate).toLocaleDateString('pt-BR')}</span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight tracking-tight text-zinc-900 leading-[1.15]">
-              {(eventTitle || 'Chá de Panela').replace(/Naila & Yuri/gi, '').trim()} <br />
-              <span className="font-script text-3xl sm:text-4xl md:text-5xl text-zinc-700 block mt-1 font-normal italic select-none">
+
+            {/* Título e Nomes com Presença Marcante */}
+            <div>
+              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-tight text-zinc-950 leading-[1.05]">
+                {(eventTitle || 'Chá de Panela').replace(/Naila & Yuri/gi, '').trim()}
+              </h1>
+              <span className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-zinc-850 block mt-2 font-normal italic tracking-normal select-none">
                 {coupleNames}
               </span>
-            </h1>
+            </div>
           </div>
 
-          {/* Countdown Area */}
-          <div className="py-2 sm:py-3 border-y border-zinc-100/80">
+          {/* Contador Discreto & Sofisticado */}
+          <div className="py-2.5 px-4 bg-zinc-50 border border-zinc-150 rounded-2xl w-fit shadow-xs">
             <Countdown targetDate={eventDate} />
           </div>
 
-          <div className="max-w-md space-y-4">
-            <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed font-light">
+          <div className="max-w-md space-y-5">
+            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-light">
               {eventDescription}
             </p>
-            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <a
                 href="#presentes"
-                className="px-4 sm:px-5 py-2.5 bg-zinc-950 hover:bg-zinc-850 text-white font-sans text-[10px] sm:text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-sm active:scale-95"
+                className="px-6 py-3 bg-zinc-950 hover:bg-zinc-850 text-white font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
-                Lista de Presentes 🎁
+                <span>Lista de Presentes</span>
+                <span>🎁</span>
               </a>
               <a
                 href="#evento"
-                className="px-4 sm:px-5 py-2.5 border border-zinc-200 hover:bg-zinc-50 text-zinc-700 font-sans text-[10px] sm:text-xs font-medium uppercase tracking-wider rounded-xl transition-all"
+                className="px-5 py-3 border border-zinc-200 hover:bg-zinc-50 text-zinc-800 font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all"
               >
                 O Evento 📍
               </a>
@@ -132,7 +137,7 @@ export default async function Home() {
         </div>
 
         {/* B&W Hero Slider Area */}
-        <div className="flex-1 relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-auto min-h-[340px] sm:min-h-[420px] lg:min-h-[500px] bg-zinc-950 border-t lg:border-t-0 lg:border-l border-zinc-100 overflow-hidden">
+        <div className="flex-1 relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-auto min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] bg-zinc-950 border-t lg:border-t-0 lg:border-l border-zinc-100 overflow-hidden">
           <HeroSlider photos={photos} />
         </div>
       </section>
