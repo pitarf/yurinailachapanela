@@ -9,74 +9,68 @@ interface TimeLeft {
   seconds: number;
 }
 
+function calculateTimeLeft(targetDate: string): TimeLeft | null {
+  const difference = +new Date(targetDate) - +new Date();
+  if (difference <= 0) return null;
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  };
+}
+
 export default function Countdown({ targetDate }: { targetDate: string }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
-  const [isFinished, setIsFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() => calculateTimeLeft(targetDate));
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = +new Date(targetDate) - +new Date();
-      if (difference <= 0) {
-        setIsFinished(true);
-        return null;
-      }
-
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
+    setMounted(true);
+    const updateCountdown = () => {
+      setTimeLeft(calculateTimeLeft(targetDate));
     };
 
-    setTimeLeft(calculateTimeLeft());
-
-    const timer = setInterval(() => {
-      const remaining = calculateTimeLeft();
-      if (remaining === null) {
-        clearInterval(timer);
-      } else {
-        setTimeLeft(remaining);
-      }
-    }, 1000);
-
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  if (!timeLeft) {
-    if (isFinished) {
-      return (
-        <div className="text-center font-serif text-2xl tracking-widest text-brand-black/40">
-          O GRANDE DIA CHEGOU
-        </div>
-      );
-    }
-    // Estado de carregamento elegante
+  const displayTime = timeLeft || {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  };
+
+  const isFinished = mounted && !timeLeft;
+
+  if (isFinished) {
     return (
-      <div className="flex justify-center space-x-8 animate-pulse text-brand-black/20">
-        {['DIAS', 'HORAS', 'MIN', 'SEG'].map((label) => (
-          <div key={label} className="text-center">
-            <div className="font-serif text-4xl md:text-6xl font-light">00</div>
-            <div className="text-xs tracking-widest mt-2">{label}</div>
-          </div>
-        ))}
+      <div className="text-center font-serif text-xl sm:text-2xl tracking-widest text-zinc-800">
+        O GRANDE DIA CHEGOU! 🎉
       </div>
     );
   }
 
+  const items = [
+    { value: displayTime.days, label: 'DIAS' },
+    { value: displayTime.hours, label: 'HORAS' },
+    { value: displayTime.minutes, label: 'MIN' },
+    { value: displayTime.seconds, label: 'SEG' },
+  ];
+
   return (
-    <div className="flex justify-center items-center gap-4 sm:gap-8 md:gap-12 select-none">
-      {[
-        { value: timeLeft.days, label: 'DIAS' },
-        { value: timeLeft.hours, label: 'HORAS' },
-        { value: timeLeft.minutes, label: 'MIN' },
-        { value: timeLeft.seconds, label: 'SEG' },
-      ].map((item) => (
-        <div key={item.label} className="flex flex-col items-center">
-          <div className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight tracking-tight text-zinc-900 dark:text-white">
+    <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 select-none w-full max-w-md mx-auto">
+      {items.map((item) => (
+        <div
+          key={item.label}
+          className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl py-2 px-1 sm:p-3 flex flex-col items-center justify-center shadow-xs"
+        >
+          <div className="font-serif text-xl sm:text-3xl md:text-4xl font-normal tracking-tight text-zinc-900 dark:text-white tabular-nums">
             {item.value.toString().padStart(2, '0')}
           </div>
-          <div className="text-[8px] sm:text-[10px] md:text-xs tracking-widest font-sans uppercase text-zinc-400 mt-1 sm:mt-2">
+          <div className="text-[8px] sm:text-[9px] tracking-widest font-sans uppercase font-semibold text-zinc-400 dark:text-zinc-500 mt-0.5">
             {item.label}
           </div>
         </div>
