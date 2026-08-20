@@ -46,34 +46,46 @@ export default function Gallery({ initialPhotos }: GalleryProps) {
 
   return (
     <div className="w-full">
-      {/* Grid da Galeria Editorial B&W */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {photos.map((photo) => (
+      {/* Grid da Galeria Editorial B&W - 2 Colunas no Mobile, 4 no Desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        {photos.map((photo, index) => (
           <div
-            key={photo.id}
+            key={photo.id || index}
             onClick={() => setSelectedPhoto(photo)}
-            className="group relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 rounded-popyn overflow-hidden cursor-pointer border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-700 hover:shadow-2xl hover:-translate-y-1"
+            className="group relative flex flex-col bg-zinc-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={photo.url}
-              alt={photo.caption || 'Foto do Casal Naila & Yuri'}
-              className="w-full h-full object-cover filter grayscale contrast-125 transition-transform duration-700 group-hover:scale-105"
-            />
+            <div className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.url}
+                alt={photo.caption || 'Foto do Casal Naila & Yuri'}
+                className="w-full h-full object-cover filter grayscale contrast-125 transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
 
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6 text-white">
-              <div className="flex justify-end">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
-                  <ZoomIn className="w-4 h-4 text-white" />
+              {/* Hover Overlay para Desktop */}
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex flex-col justify-between p-4 sm:p-6 text-white">
+                <div className="flex justify-end">
+                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                    <ZoomIn className="w-4 h-4 text-white" />
+                  </div>
                 </div>
+                {photo.caption && (
+                  <p className="font-serif text-xs sm:text-sm font-light leading-snug tracking-wide drop-shadow-md">
+                    {photo.caption}
+                  </p>
+                )}
               </div>
-              {photo.caption && (
-                <p className="font-serif text-sm font-light leading-snug tracking-wide drop-shadow-md">
+            </div>
+
+            {/* Legenda visível abaixo da foto para dispositivos móveis */}
+            {photo.caption && (
+              <div className="p-2.5 sm:hidden bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
+                <p className="font-serif text-[11px] font-light text-zinc-700 dark:text-zinc-300 line-clamp-2 leading-tight">
                   {photo.caption}
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -82,20 +94,20 @@ export default function Gallery({ initialPhotos }: GalleryProps) {
       {selectedPhoto && (
         <div
           onClick={() => setSelectedPhoto(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-fade-in"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-12 animate-fade-in"
         >
           <button
             onClick={() => setSelectedPhoto(null)}
-            className="absolute top-6 right-6 p-3 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md transition-colors"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2.5 sm:p-3 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md transition-colors z-10"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl max-h-[85vh] w-full bg-zinc-950 border border-zinc-800 rounded-popyn overflow-hidden flex flex-col items-center p-4 shadow-2xl"
+            className="relative max-w-4xl max-h-[90vh] w-full bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col items-center p-3 sm:p-4 shadow-2xl"
           >
-            <div className="relative w-full h-[65vh] flex items-center justify-center overflow-hidden">
+            <div className="relative w-full h-[55vh] sm:h-[65vh] flex items-center justify-center overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selectedPhoto.url}
@@ -104,7 +116,7 @@ export default function Gallery({ initialPhotos }: GalleryProps) {
               />
             </div>
             {selectedPhoto.caption && (
-              <p className="font-serif text-base text-zinc-300 font-light mt-4 text-center px-4">
+              <p className="font-serif text-xs sm:text-base text-zinc-300 font-light mt-3 sm:mt-4 text-center px-4">
                 {selectedPhoto.caption}
               </p>
             )}

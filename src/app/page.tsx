@@ -83,56 +83,58 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen relative flex flex-col bg-white text-zinc-950">
-      {/* Header */}
-      <header className="w-full py-6 px-6 md:px-12 border-b border-zinc-100 flex items-center justify-between z-10">
-        <Logo variant="symbol" size={40} />
-        <nav className="flex items-center space-x-6">
-          <a href="#historia" className="text-xs font-sans tracking-widest hover:text-zinc-500 uppercase transition-colors">História</a>
-          <a href="#galeria" className="text-xs font-sans tracking-widest hover:text-zinc-500 uppercase transition-colors">Galeria</a>
-          <a href="#evento" className="text-xs font-sans tracking-widest hover:text-zinc-500 uppercase transition-colors">O Evento</a>
-          <a href="#presentes" className="text-xs font-sans tracking-widest hover:text-zinc-500 uppercase transition-colors">Presentes</a>
-          <a href="/admin" className="text-xs font-sans tracking-widest font-semibold hover:text-zinc-500 uppercase border border-zinc-200 px-4 py-2 rounded-full transition-all hover:bg-zinc-50">Painel</a>
+      {/* Header Fixo & Otimizado para Mobile */}
+      <header className="w-full py-3.5 sm:py-5 px-4 sm:px-6 md:px-12 border-b border-zinc-100 flex items-center justify-between z-30 sticky top-0 bg-white/95 backdrop-blur-md">
+        <Logo variant="symbol" size={36} />
+        <nav className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none py-1 max-w-[75vw] sm:max-w-none">
+          <a href="#historia" className="text-[10px] sm:text-xs font-sans tracking-wider uppercase text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap px-1">História</a>
+          <a href="#galeria" className="text-[10px] sm:text-xs font-sans tracking-wider uppercase text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap px-1">Galeria</a>
+          <a href="#evento" className="text-[10px] sm:text-xs font-sans tracking-wider uppercase text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap px-1">O Evento</a>
+          <a href="#presentes" className="text-[10px] sm:text-xs font-sans tracking-wider uppercase text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap px-1">Presentes</a>
+          <a href="/admin" className="text-[9px] sm:text-xs font-sans tracking-wider font-semibold hover:text-zinc-500 uppercase border border-zinc-200 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all hover:bg-zinc-50 whitespace-nowrap">Painel</a>
         </nav>
       </header>
 
       {/* Hero Section */}
-      <section className="relative w-full flex flex-col lg:flex-row items-stretch border-b border-zinc-100 min-h-[85vh]">
+      <section className="relative w-full flex flex-col lg:flex-row items-stretch border-b border-zinc-100 min-h-[80vh] lg:min-h-[85vh]">
         {/* Text Area */}
-        <div className="flex-1 flex flex-col justify-between p-8 md:p-16 lg:p-24 space-y-12">
-          <div className="space-y-4">
-            <span className="text-xs tracking-widest font-sans text-brand-muted uppercase block">Save the date • {new Date(eventDate).toLocaleDateString('pt-BR')}</span>
-            <h1 className="font-serif text-5xl md:text-7xl font-extralight tracking-tight text-zinc-900 leading-[1.1]">
+        <div className="flex-1 flex flex-col justify-between p-6 sm:p-10 md:p-16 lg:p-24 space-y-8 sm:space-y-12">
+          <div className="space-y-3 sm:space-y-4">
+            <span className="text-[10px] sm:text-xs tracking-widest font-sans text-brand-muted uppercase block">
+              Save the date • {new Date(eventDate).toLocaleDateString('pt-BR')}
+            </span>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-extralight tracking-tight text-zinc-900 leading-[1.15]">
               {(eventTitle || 'Chá de Panela').replace(/Naila & Yuri/gi, '').trim()} <br />
-              <span className="font-script text-4xl md:text-6xl text-zinc-700 block mt-3 font-normal italic select-none">
+              <span className="font-script text-3xl sm:text-4xl md:text-6xl text-zinc-700 block mt-2 sm:mt-3 font-normal italic select-none">
                 {coupleNames}
               </span>
             </h1>
           </div>
 
           {/* Countdown Area */}
-          <div className="py-8 border-y border-zinc-100">
+          <div className="py-6 sm:py-8 border-y border-zinc-100">
             <Countdown targetDate={eventDate} />
           </div>
 
           <div className="max-w-md">
-            <p className="text-sm text-zinc-500 leading-relaxed font-light">
+            <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed font-light">
               {eventDescription}
             </p>
           </div>
         </div>
 
         {/* B&W Hero Slider Area */}
-        <div className="flex-1 relative min-h-[400px] lg:min-h-0 bg-zinc-950 border-t lg:border-t-0 lg:border-l border-zinc-100 overflow-hidden">
+        <div className="flex-1 relative min-h-[350px] sm:min-h-[450px] lg:min-h-0 bg-zinc-950 border-t lg:border-t-0 lg:border-l border-zinc-100 overflow-hidden">
           <HeroSlider photos={photos} />
         </div>
       </section>
 
       {/* Nossa História */}
-      <section id="historia" className="py-20 md:py-32 px-6 md:px-12 max-w-4xl mx-auto text-center border-b border-zinc-100">
-        <Logo variant="monogram" size={100} className="mx-auto mb-8 opacity-75" />
-        <span className="text-xs tracking-widest font-sans text-brand-muted uppercase block mb-4">Nossa História</span>
-        <h2 className="font-serif text-3xl md:text-5xl font-light text-zinc-900 mb-8">O Início de Tudo</h2>
-        <div className="space-y-6 text-sm md:text-base text-zinc-600 font-light leading-relaxed max-w-2xl mx-auto">
+      <section id="historia" className="py-14 sm:py-20 md:py-32 px-4 sm:px-6 md:px-12 max-w-4xl mx-auto text-center border-b border-zinc-100">
+        <Logo variant="monogram" size={90} className="mx-auto mb-6 sm:mb-8 opacity-75" />
+        <span className="text-[10px] sm:text-xs tracking-widest font-sans text-brand-muted uppercase block mb-3 sm:mb-4">Nossa História</span>
+        <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-zinc-900 mb-6 sm:mb-8">O Início de Tudo</h2>
+        <div className="space-y-4 sm:space-y-6 text-xs sm:text-sm md:text-base text-zinc-600 font-light leading-relaxed max-w-2xl mx-auto">
           {historyParagraphs.map((para: string, i: number) => (
             <p key={i}>{para}</p>
           ))}
@@ -140,11 +142,11 @@ export default async function Home() {
       </section>
 
       {/* Galeria de Fotos */}
-      <section id="galeria" className="py-20 md:py-32 px-6 md:px-12 max-w-7xl mx-auto w-full border-b border-zinc-100">
-        <div className="text-center space-y-4 mb-16">
-          <span className="text-xs tracking-widest font-sans text-brand-muted uppercase block">Galeria Editorial</span>
-          <h2 className="font-serif text-3xl md:text-5xl font-light text-zinc-900">Momentos do Casal</h2>
-          <p className="text-sm text-zinc-500 font-light max-w-lg mx-auto leading-relaxed">
+      <section id="galeria" className="py-14 sm:py-20 md:py-32 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto w-full border-b border-zinc-100">
+        <div className="text-center space-y-3 sm:space-y-4 mb-10 sm:mb-16">
+          <span className="text-[10px] sm:text-xs tracking-widest font-sans text-brand-muted uppercase block">Galeria Editorial</span>
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-zinc-900">Momentos do Casal</h2>
+          <p className="text-xs sm:text-sm text-zinc-500 font-light max-w-lg mx-auto leading-relaxed">
             Alguns dos nossos registros favoritos capturados em preto e branco.
           </p>
         </div>
@@ -152,7 +154,7 @@ export default async function Home() {
       </section>
 
       {/* O Evento & Programação */}
-      <section id="evento" className="py-20 md:py-32 px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 border-b border-zinc-100">
+      <section id="evento" className="py-14 sm:py-20 md:py-32 px-4 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 lg:gap-24 border-b border-zinc-100">
         {/* Informações */}
         <div className="space-y-8 flex flex-col justify-center">
           <div>

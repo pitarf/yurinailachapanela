@@ -64,7 +64,10 @@ export default function GiftReservationModal({
 
       setDeliveryAddress(data.deliveryAddress);
       setStep('success');
-      onSuccess(data.gift);
+      onSuccess({
+        ...data.gift,
+        reservation: data.reservation,
+      });
       toast.success('Presente reservado com sucesso! ❤️');
     } catch (err: any) {
       toast.error(err.message || 'Não conseguimos reservar este presente.');
@@ -81,8 +84,8 @@ export default function GiftReservationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
-      <div className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn shadow-2xl overflow-hidden p-6 md:p-8 animate-fade-in text-brand-black dark:text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 transition-opacity">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl md:rounded-popyn shadow-2xl p-5 sm:p-6 md:p-8 animate-fade-in text-brand-black dark:text-white">
         
         {/* Close Button */}
         <button

@@ -934,15 +934,22 @@ export default function AdminPanel({
                         <td className="py-3 text-zinc-500">{gift.category}</td>
                         <td className="py-3 font-mono">{gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td className="py-3">
-                          <span
-                            className={`px-2.5 py-1 rounded-full text-[9px] font-sans tracking-wide uppercase font-semibold ${
-                              gift.status === 'AVAILABLE'
-                                ? 'bg-green-50 text-green-700 dark:bg-green-950/20 dark:text-green-400'
-                                : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-                            }`}
-                          >
-                            {gift.status === 'AVAILABLE' ? 'Disponível' : 'Reservado'}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[9px] font-sans tracking-wide uppercase font-semibold w-fit ${
+                                gift.status === 'AVAILABLE'
+                                  ? 'bg-green-50 text-green-700 dark:bg-green-950/20 dark:text-green-400'
+                                  : 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400'
+                              }`}
+                            >
+                              {gift.status === 'AVAILABLE' ? 'Disponível' : 'Reservado'}
+                            </span>
+                            {gift.reservation?.personName && (
+                              <span className="text-[10px] text-zinc-500 font-sans">
+                                por <strong>{gift.reservation.personName}</strong>
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="py-3 text-right">
                           <div className="flex justify-end gap-1.5">
