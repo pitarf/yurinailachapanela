@@ -1,0 +1,1096 @@
+Quero que você desenvolva uma aplicação web completa para o casal Naila e Yuri.
+
+IMPORTANTE:
+Não quero apenas uma landing page estática. Quero construir a primeira versão de uma plataforma/site de eventos do casal, começando pelo CHÁ DE PANELA e já deixando a arquitetura preparada para futuramente transformar o mesmo projeto no SITE OFICIAL DO CASAMENTO.
+
+Antes de começar a implementar, analise cuidadosamente todos os requisitos abaixo e a identidade visual fornecida em:
+
+ID_NAIEYURI.pdf
+
+Esse arquivo contém a identidade visual oficial do casal e deve ser tratado como referência principal de design.
+
+==================================================
+1. CONTEXTO DO PROJETO
+==================================================
+
+O casal é:
+
+NAILA & YURI
+
+O primeiro evento que será divulgado pela plataforma é o:
+
+CHÁ DE PANELA
+
+Data:
+11 de outubro de 2026
+
+O casamento acontecerá futuramente.
+
+A identidade visual do casamento já existe e deve ser aproveitada desde agora para criar uma experiência visual consistente entre o chá de panela e o futuro site do casamento.
+
+No material de identidade visual existe também uma referência visual à data do casamento:
+
+14.08.27
+
+Essa informação aparece no material como "Save The Date", portanto o projeto deve estar preparado para futuramente utilizar essa data no módulo/site do casamento.
+
+==================================================
+2. IDENTIDADE VISUAL
+==================================================
+
+A identidade visual fornecida no PDF é OBRIGATÓRIA como referência.
+
+Não invente uma identidade visual completamente diferente.
+
+A estética deve transmitir:
+
+- Elegância
+- Minimalismo
+- Sofisticação
+- Editorial/fashion
+- Romantismo moderno
+- Personalidade
+- Uso predominante de preto, branco e tons neutros
+- Tipografia serifada de alto contraste
+- Elementos caligráficos/script utilizados com moderação
+- Muito espaço em branco
+- Composições tipográficas grandes
+- Fotografias em preto e branco ou com tratamento sofisticado
+- Elementos geométricos arredondados
+- O símbolo da identidade do casal
+
+O logo "YURI & NAILA" / "NAILA & YURI" deve ser preservado.
+
+NÃO redesenhe o logo.
+
+NÃO altere as proporções ou características do símbolo.
+
+Utilize os arquivos fornecidos como assets quando apropriado.
+
+A identidade apresenta um símbolo baseado em formas interligadas/infinito.
+
+Esse símbolo representa:
+
+- Pai
+- Filho
+- Espírito Santo
+- Naila e Yuri sendo um só
+- A ideia de infinito e união para sempre
+
+Essa simbologia pode ser incorporada ao design do site de maneira elegante.
+
+==================================================
+3. REFERÊNCIA À PIPOCA
+==================================================
+
+Existe uma referência afetiva à pipoca associada ao casal/evento.
+
+Isso deve ser utilizado de maneira inteligente e sutil.
+
+NÃO quero transformar o site em um site infantil ou temático de pipoca.
+
+A pipoca deve funcionar como um pequeno easter egg ou elemento secundário da experiência.
+
+Exemplos:
+
+- Pequenos detalhes gráficos
+- Ícones discretos
+- Microanimações
+- Elementos decorativos
+- Pequenos momentos inesperados durante a navegação
+
+A identidade principal continua sendo elegante, minimalista e editorial.
+
+==================================================
+4. OBJETIVO DA EXPERIÊNCIA
+==================================================
+
+Quando uma pessoa entrar no site, ela deve imediatamente entender:
+
+"Estou no site do Chá de Panela da Naila e do Yuri."
+
+A experiência deve ser emocional e visualmente forte.
+
+O visitante deve conseguir:
+
+1. Conhecer o evento
+2. Ver fotos do casal
+3. Saber quando e onde será
+4. Entender o que acontecerá durante o evento
+5. Interagir com a lista de presentes
+6. Reservar um presente
+7. Receber as informações necessárias para comprar/entregar o presente
+
+==================================================
+5. ESTRUTURA DA LANDING PAGE
+==================================================
+
+Crie uma landing page moderna, responsiva e extremamente bem acabada.
+
+Estrutura inicial sugerida:
+
+------------------------------------------
+HERO
+------------------------------------------
+
+Tela inicial visualmente impactante.
+
+Utilizar uma fotografia de pré-wedding do casal como destaque.
+
+Sobre a fotografia:
+
+NAILA & YURI
+
+CHÁ DE PANELA
+
+11.10.2026
+
+Adicionar uma contagem regressiva para o evento.
+
+A contagem regressiva deve mostrar:
+
+- Dias
+- Horas
+- Minutos
+- Segundos
+
+Criar uma entrada/animação elegante.
+
+Não exagerar nas animações.
+
+A experiência deve parecer um site editorial premium.
+
+------------------------------------------
+NOSSA HISTÓRIA / MOMENTO
+------------------------------------------
+
+Criar uma seção curta e emocional apresentando o casal.
+
+O conteúdo textual poderá ser facilmente alterado posteriormente pelo painel administrativo.
+
+Não inventar uma história que não foi fornecida.
+
+Utilizar texto placeholder claramente identificável caso o conteúdo final ainda não tenha sido fornecido.
+
+------------------------------------------
+O GRANDE DIA
+------------------------------------------
+
+Mostrar:
+
+CHÁ DE PANELA
+
+11 de outubro de 2026
+
+Horário:
+[EDITÁVEL NO ADMIN]
+
+Local:
+[EDITÁVEL NO ADMIN]
+
+Endereço:
+[EDITÁVEL NO ADMIN]
+
+Adicionar botão:
+
+"COMO CHEGAR"
+
+Esse botão deverá abrir o Google Maps ou serviço de mapas configurado.
+
+------------------------------------------
+O QUE VAI ACONTECER
+------------------------------------------
+
+Criar uma seção apresentando as atividades do evento.
+
+Exemplos:
+
+🎉 Bingo
+🎲 Brincadeiras
+🎶 Música
+🍿 Pipoca
+❤️ Momentos especiais
+
+IMPORTANTE:
+
+As atividades devem ser administráveis pelo painel.
+
+O administrador deverá conseguir:
+
+- Criar atividade
+- Editar atividade
+- Excluir atividade
+- Alterar ordem
+- Definir título
+- Definir descrição
+- Adicionar horário opcional
+- Adicionar ícone/imagem opcional
+
+------------------------------------------
+LISTA DE PRESENTES
+------------------------------------------
+
+Essa será uma das principais funcionalidades da aplicação.
+
+Título:
+
+"ESCOLHA UM PRESENTE PARA NÓS"
+
+Texto explicativo:
+
+"Escolha um presente da nossa lista e faça parte desse momento tão especial."
+
+Criar uma grade elegante de produtos.
+
+Cada produto deverá possuir:
+
+- Imagem
+- Nome
+- Descrição
+- Valor
+- Categoria
+- Status
+- Botão para presentear
+
+Exemplo:
+
+CAFETEIRA
+R$ 399,90
+
+[QUERO PRESENTEAR]
+
+==================================================
+6. SISTEMA DE LISTA DE PRESENTES
+==================================================
+
+A lista de presentes NÃO será um sistema de e-commerce tradicional.
+
+O site NÃO realizará a venda do produto.
+
+O sistema funcionará como uma lista de presentes/reserva.
+
+Fluxo:
+
+1. Visitante encontra um produto.
+2. Clica em "QUERO PRESENTEAR".
+3. Abre uma janela/modal.
+4. O sistema mostra o produto escolhido.
+5. Solicita:
+   - Nome
+   - E-mail
+6. O visitante confirma.
+7. O produto passa para o status "RESERVADO".
+8. O sistema registra quem ficou responsável pelo presente.
+9. O visitante recebe a informação de que o presente foi reservado.
+10. O site apresenta o link externo para compra, caso exista.
+
+IMPORTANTE:
+
+A reserva NÃO significa que o produto foi comprado.
+
+Significa apenas:
+
+"Essa pessoa se comprometeu a presentear o casal com esse item."
+
+==================================================
+7. DADOS DA RESERVA
+==================================================
+
+Cada reserva deve armazenar:
+
+- ID
+- ID do produto
+- Nome do produto
+- Nome da pessoa
+- E-mail da pessoa
+- Data/hora da reserva
+- Status
+- Observações opcionais
+
+Exemplo:
+
+Produto:
+Cafeteira
+
+Pessoa:
+João da Silva
+
+E-mail:
+joao@email.com
+
+Status:
+Reservado
+
+Data:
+08/08/2026 14:30
+
+==================================================
+8. EVITAR DUPLICIDADE
+==================================================
+
+Essa é uma regra CRÍTICA.
+
+Duas pessoas não podem reservar o mesmo presente simultaneamente.
+
+O backend/banco de dados deve possuir uma proteção real contra concorrência.
+
+Não confiar apenas no frontend.
+
+Exemplo:
+
+Pessoa A e Pessoa B clicam no mesmo produto praticamente ao mesmo tempo.
+
+O sistema deve garantir que somente uma reserva seja concluída.
+
+A segunda pessoa deverá receber uma mensagem como:
+
+"Esse presente acabou de ser reservado por outra pessoa. Mas não se preocupe, ainda existem outros presentes disponíveis."
+
+O produto deve ser atualizado automaticamente.
+
+==================================================
+9. STATUS DOS PRESENTES
+==================================================
+
+Cada produto poderá ter pelo menos:
+
+AVAILABLE
+RESERVED
+
+Futuramente podemos adicionar:
+
+PURCHASED
+DELIVERED
+CANCELLED
+
+Na interface pública:
+
+AVAILABLE:
+"QUERO PRESENTEAR"
+
+RESERVED:
+"PRESENTE RESERVADO"
+
+Produtos reservados não devem permitir nova reserva.
+
+==================================================
+10. LINK DE COMPRA
+==================================================
+
+Cada produto poderá possuir um link externo.
+
+Exemplos:
+
+- Mercado Livre
+- Amazon
+- Shopee
+- Magazine Luiza
+- Outros
+
+Depois que a pessoa reservar o presente, mostrar:
+
+"Agora é só comprar o presente."
+
+[COMPRAR PRESENTE]
+
+Esse botão deve abrir o link externo configurado no produto em nova aba.
+
+IMPORTANTE:
+
+O site não deve processar o pagamento da compra do produto.
+
+A compra acontece na plataforma externa.
+
+==================================================
+11. IMAGEM AUTOMÁTICA DOS PRODUTOS
+==================================================
+
+No painel administrativo, o administrador poderá cadastrar:
+
+Nome
+Valor
+Link de compra
+
+Quando possível, o sistema deverá tentar obter automaticamente os metadados do link informado.
+
+Tentar identificar:
+
+- Imagem principal
+- Título
+- Descrição
+- Preço
+
+Utilizar metadados Open Graph quando disponíveis.
+
+Exemplo:
+
+og:image
+og:title
+og:description
+og:price
+
+IMPORTANTE:
+
+Não depender exclusivamente de scraping de Mercado Livre, Amazon ou Shopee.
+
+Essas plataformas podem bloquear requisições ou alterar sua estrutura.
+
+Portanto:
+
+1. Tentar obter automaticamente os metadados.
+2. Se funcionar, preencher os campos automaticamente.
+3. Permitir que o administrador edite tudo.
+4. Permitir upload manual de imagem caso a captura automática não funcione.
+
+Nunca deixar o produto sem possibilidade de imagem por causa de falha no scraping.
+
+==================================================
+12. ENDEREÇO PARA ENTREGA
+==================================================
+
+O casal poderá cadastrar no painel um endereço para entrega dos presentes.
+
+Esse endereço NÃO deve ficar exposto publicamente na landing page.
+
+Depois que uma pessoa reservar um presente, mostrar:
+
+"Quer enviar o presente para nós?"
+
+"Confira abaixo os dados para entrega."
+
+Exibir o endereço configurado.
+
+Também permitir futuramente:
+
+- Copiar endereço
+- Abrir no mapa
+
+IMPORTANTE:
+
+O endereço deve ser tratado como informação administrativa e não deve aparecer publicamente antes da reserva.
+
+==================================================
+13. PIX
+==================================================
+
+Preparar a estrutura para futuramente permitir uma opção de presente via PIX.
+
+No painel administrativo:
+
+- Chave PIX
+- Nome do recebedor
+- Cidade
+- QR Code
+- Texto explicativo
+
+Na página pública poderá existir uma opção:
+
+"Prefere nos presentear via PIX?"
+
+E mostrar os dados configurados.
+
+Essa funcionalidade deve ser independente da compra de produtos.
+
+==================================================
+14. PAINEL ADMINISTRATIVO
+==================================================
+
+Criar uma área administrativa protegida.
+
+Exemplo:
+
+/admin
+
+O painel deve exigir autenticação.
+
+Não criar uma área administrativa acessível publicamente sem autenticação.
+
+------------------------------------------
+DASHBOARD
+------------------------------------------
+
+Mostrar indicadores:
+
+Total de presentes
+Presentes disponíveis
+Presentes reservados
+Total de pessoas que reservaram
+Total de valores dos presentes
+Quantidade de atividades
+
+Exemplo:
+
+32 PRESENTES
+18 RESERVADOS
+14 DISPONÍVEIS
+
+------------------------------------------
+PRODUTOS
+------------------------------------------
+
+Tela para:
+
+- Listar produtos
+- Criar produto
+- Editar produto
+- Excluir produto
+- Alterar status
+- Reordenar produtos
+- Visualizar reserva
+
+Campos:
+
+Nome
+Descrição
+Valor
+Categoria
+Link de compra
+Imagem
+Status
+
+------------------------------------------
+RESERVAS
+------------------------------------------
+
+Tabela:
+
+Produto
+Pessoa
+E-mail
+Data
+Status
+
+Permitir visualizar os detalhes.
+
+Permitir cancelar uma reserva pelo administrador.
+
+Ao cancelar:
+
+O presente volta a ficar disponível.
+
+------------------------------------------
+EVENTO
+------------------------------------------
+
+Campos:
+
+Nome do evento
+Data
+Horário
+Local
+Endereço
+Link Google Maps
+Descrição
+
+------------------------------------------
+ATIVIDADES
+------------------------------------------
+
+CRUD completo.
+
+------------------------------------------
+CONFIGURAÇÕES
+------------------------------------------
+
+Permitir configurar:
+
+- Nome do casal
+- Logo
+- Fotos
+- Data do chá
+- Data do casamento
+- Endereço
+- PIX
+- Redes sociais
+- Textos
+- Informações gerais
+
+==================================================
+15. ARQUITETURA PREPARADA PARA O CASAMENTO
+==================================================
+
+Esse ponto é MUITO IMPORTANTE.
+
+Não criar o sistema pensando exclusivamente no chá de panela.
+
+Criar uma arquitetura baseada em EVENTOS.
+
+Exemplo conceitual:
+
+EVENT
+  id
+  type
+  title
+  date
+  location
+  description
+
+Event types:
+
+PANTRY_PARTY
+WEDDING
+
+Assim, o mesmo projeto poderá futuramente possuir:
+
+/cha-de-panela
+
+e
+
+/casamento
+
+ou uma estrutura equivalente.
+
+A lista de presentes também deve poder ser associada a um evento.
+
+Exemplo:
+
+GiftList
+  id
+  eventId
+  productId
+  status
+
+Isso permitirá que futuramente exista uma lista específica para o casamento.
+
+==================================================
+16. FUTURO SITE DO CASAMENTO
+==================================================
+
+A arquitetura deve permitir futuramente adicionar:
+
+- Save the Date
+- Contagem regressiva
+- Nossa história
+- Galeria
+- Cerimônia
+- Recepção
+- Localização
+- RSVP
+- Lista de presentes
+- Informações aos convidados
+- Dress code
+- Hospedagem
+- FAQ
+- Mensagens dos convidados
+
+NÃO implementar tudo isso agora.
+
+Apenas estruturar o projeto para que isso possa ser adicionado sem precisar reescrever toda a aplicação.
+
+==================================================
+17. GALERIA
+==================================================
+
+Criar uma seção de fotos do casal.
+
+Inicialmente utilizar placeholders caso as fotos finais ainda não estejam disponíveis.
+
+O administrador deverá futuramente conseguir:
+
+- Upload
+- Remover
+- Reordenar
+- Definir foto principal
+
+As imagens devem possuir tratamento visual sofisticado.
+
+Preferência por:
+
+- Preto e branco
+- Contraste elegante
+- Composições editoriais
+
+==================================================
+18. RESPONSIVIDADE
+==================================================
+
+O projeto será utilizado principalmente em celular.
+
+Mobile-first.
+
+Garantir excelente experiência em:
+
+- iPhone
+- Android
+- Tablets
+- Desktop
+
+A experiência mobile deve ser tratada como prioridade.
+
+Não simplesmente reduzir a versão desktop.
+
+Criar layouts específicos quando necessário.
+
+==================================================
+19. ANIMAÇÕES
+==================================================
+
+Utilizar animações suaves.
+
+Exemplos:
+
+- Fade in
+- Slide
+- Parallax sutil
+- Transições de imagens
+- Contagem regressiva
+- Microinterações nos botões
+- Hover no desktop
+
+Evitar:
+
+- Animações exageradas
+- Efeitos infantis
+- Muitas transições simultâneas
+- Carregamentos pesados
+
+A sensação deve ser:
+
+"site editorial de casamento premium".
+
+==================================================
+20. TIPOGRAFIA
+==================================================
+
+Utilizar fontes que conversem com a identidade apresentada no PDF.
+
+Priorizar:
+
+- Serif de alto contraste para títulos
+- Script elegante para detalhes
+- Sans-serif discreta para textos funcionais
+
+Garantir legibilidade.
+
+Não utilizar dezenas de fontes diferentes.
+
+A tipografia deve ser um dos elementos principais da identidade.
+
+==================================================
+21. CORES
+==================================================
+
+Base:
+
+Preto
+Branco
+Cinza
+Tons neutros
+
+Evitar:
+
+- Rosa
+- Roxo
+- Azul vibrante
+- Verde neon
+- Gradientes coloridos
+- Estética genérica de casamento
+
+A identidade é essencialmente monocromática/elegante.
+
+==================================================
+22. BANCO DE DADOS
+==================================================
+
+Escolha uma solução adequada para produção.
+
+Pode utilizar, por exemplo:
+
+Supabase + PostgreSQL
+
+ou outra solução equivalente caso exista justificativa técnica.
+
+O banco deverá possuir estrutura organizada para:
+
+users/admins
+events
+products/gifts
+reservations
+activities
+photos
+settings
+
+Criar relacionamentos corretamente.
+
+==================================================
+23. SEGURANÇA
+==================================================
+
+Implementar:
+
+- Autenticação do administrador
+- Proteção das rotas administrativas
+- Validação de dados no backend
+- Validação de e-mail
+- Sanitização dos dados
+- Proteção contra reservas duplicadas
+- Controle de permissões
+- Não expor credenciais
+- Variáveis de ambiente
+- Não colocar secrets no frontend
+
+==================================================
+24. EXPERIÊNCIA DE RESERVA
+==================================================
+
+Criar um fluxo muito bem pensado.
+
+Exemplo:
+
+[CAFETEIRA]
+
+R$ 399,90
+
+Disponível
+
+[QUERO PRESENTEAR]
+
+↓
+
+Modal
+
+"Você escolheu presentear Naila & Yuri com:"
+
+CAFETEIRA
+
+"Agora só precisamos saber quem está preparando esse presente."
+
+Nome
+
+E-mail
+
+[CONFIRMAR PRESENTE]
+
+↓
+
+Confirmação:
+
+"Presente reservado! ❤️"
+
+"Obrigado por fazer parte desse momento."
+
+[COMPRAR PRESENTE]
+
+[VER ENDEREÇO PARA ENTREGA]
+
+==================================================
+25. FEEDBACKS
+==================================================
+
+Criar estados claros:
+
+Loading
+Success
+Error
+Empty
+Reserved
+Unavailable
+
+Exemplos:
+
+"Carregando presentes..."
+
+"Nenhum presente disponível no momento."
+
+"Esse presente já foi reservado."
+
+"Não conseguimos concluir a reserva. Tente novamente."
+
+==================================================
+26. SEO
+==================================================
+
+Preparar:
+
+Title
+Description
+Open Graph
+Twitter/X Card
+Favicon
+Imagem de compartilhamento
+
+Exemplo:
+
+Title:
+
+Naila & Yuri | Chá de Panela
+
+Description:
+
+"Um dia especial para celebrar o início de uma nova história."
+
+==================================================
+27. PERFORMANCE
+==================================================
+
+O site deve ser rápido.
+
+Priorizar:
+
+- Otimização de imagens
+- Lazy loading
+- Compressão
+- Cache
+- Code splitting
+- Evitar bibliotecas desnecessárias
+- Boa pontuação Lighthouse
+
+==================================================
+28. ACESSIBILIDADE
+==================================================
+
+Implementar:
+
+- Contraste adequado
+- Alt text nas imagens
+- Navegação por teclado
+- Labels nos campos
+- Estados de foco
+- Botões acessíveis
+- Sem depender apenas de cor para indicar status
+
+==================================================
+29. ESTRUTURA DO PROJETO
+==================================================
+
+Organizar o código de maneira profissional.
+
+Separar:
+
+components
+pages/routes
+layouts
+services
+database
+types
+hooks
+utils
+styles
+admin
+
+Não criar um arquivo gigante contendo toda a aplicação.
+
+Criar componentes reutilizáveis.
+
+==================================================
+30. IMPORTANTE SOBRE O DESENVOLVIMENTO
+==================================================
+
+Não comece simplesmente escrevendo código.
+
+Primeiro:
+
+1. Analise a identidade visual fornecida.
+2. Analise todos os requisitos.
+3. Defina a arquitetura.
+4. Defina o modelo de dados.
+5. Defina os fluxos.
+6. Defina as rotas.
+7. Defina os componentes.
+8. Só então comece a implementação.
+
+Depois da implementação:
+
+1. Rode build.
+2. Rode lint.
+3. Rode typecheck.
+4. Rode testes.
+5. Corrija erros.
+6. Faça uma revisão visual.
+7. Faça uma revisão responsiva.
+8. Teste o fluxo completo de reserva.
+9. Teste duas reservas simultâneas do mesmo produto.
+10. Teste o painel administrativo.
+11. Teste o comportamento quando o scraping da imagem falhar.
+
+Não considere o trabalho concluído apenas porque a aplicação abre no navegador.
+
+==================================================
+31. CRITÉRIO DE QUALIDADE
+==================================================
+
+Quero uma aplicação com aparência de produto real.
+
+Não quero:
+
+- Template genérico
+- Landing page genérica de casamento
+- Cards genéricos
+- Design infantil
+- Excesso de rosa/dourado
+- Efeitos exagerados
+- Texto Lorem Ipsum
+- Botões sem funcionalidade
+- Dados falsos misturados com dados reais
+
+Quero:
+
+- Identidade visual fiel
+- Elegância
+- Minimalismo
+- Interatividade
+- Excelente experiência mobile
+- Código organizado
+- Backend funcional
+- Banco funcional
+- Painel administrativo funcional
+- Lista de presentes funcional
+- Sistema de reserva seguro
+- Arquitetura preparada para o casamento
+
+==================================================
+32. PRIMEIRA ENTREGA
+==================================================
+
+Comece criando a estrutura completa do projeto.
+
+Na primeira etapa:
+
+1. Analise o PDF da identidade visual.
+2. Crie a arquitetura.
+3. Crie o modelo de dados.
+4. Crie a estrutura de rotas.
+5. Crie o layout principal.
+6. Crie a landing page do chá de panela.
+7. Crie o painel administrativo.
+8. Crie a estrutura da lista de presentes.
+9. Conecte o banco de dados.
+10. Implemente o fluxo de reserva.
+11. Implemente autenticação administrativa.
+12. Faça todas as validações.
+
+Não pare em um protótipo visual.
+
+Quero a aplicação funcional.
+
+==================================================
+33. REGRA FINAL
+==================================================
+
+Sempre que houver dúvida entre:
+
+"fazer algo rápido"
+
+e
+
+"fazer algo estruturado para crescer",
+
+escolha a segunda opção.
+
+Esse projeto começa como:
+
+NAILA & YURI
+CHÁ DE PANELA
+11.10.2026
+
+Mas deverá evoluir futuramente para:
+
+NAILA & YURI
+WEDDING
+14.08.2027
+
+Portanto, construa a primeira versão pensando na segunda.
+
+Use a identidade visual fornecida como fonte principal de direção visual e preserve a personalidade da marca do casal.
+
+Comece agora pela análise do projeto e arquitetura antes de implementar.

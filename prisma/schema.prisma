@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EventType {
+  PANTRY_PARTY // Chá de Panela
+  WEDDING      // Casamento
+}
+
+enum GiftStatus {
+  AVAILABLE
+  RESERVED
+  PURCHASED
+  DELIVERED
+  CANCELLED
+}
+
+model Event {
+  id          String     @id @default(cuid())
+  type        EventType  @unique @default(PANTRY_PARTY)
+  title       String
+  date        DateTime
+  time        String?
+  location    String?
+  address     String?
+  mapsUrl     String?
+  description String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  gifts       Gift[]
+  activities  Activity[]
+}
+
+model Gift {
+  id           String       @id @default(cuid())
+  eventId      String
+  event        Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?      @db.Text
+  price        Float?       @default(0)
+  category     String       @default("Geral")
+  purchaseUrl  String?
+  imageUrl     String?
+  status       GiftStatus   @default(AVAILABLE)
+  order        Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  reservation  Reservation?
+}
+
+model Reservation {
+  id         String   @id @default(cuid())
+  giftId     String   @unique
+  gift       Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  personName String
+  email      String
+  notes      String?  @db.Text
+  createdAt  DateTime @default(now())
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  title       String
+  description String?  @db.Text
+  time        String?
+  icon        String?
+  order       Int      @default(0)
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  isHero    Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SystemSetting {
+  id              String   @id @default("default")
+  coupleNames     String   @default("Naila & Yuri")
+  siteTitle       String   @default("Naila & Yuri | Chá de Panela")
+  siteDescription String   @default("Um dia especial para celebrar o início de uma nova história.")
+  siteKeywords    String   @default("Naila, Yuri, Chá de Panela, Casamento")
+  faviconUrl      String?
+  ogImageUrl      String?
+  deliveryAddress String?  @db.Text
+  pixKey          String?
+  pixReceiver     String?
+  pixCity         String?
+  pixQrCodeUrl    String?
+  showPrices      Boolean  @default(false)
+  historyText     String?  @db.Text
+  updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
