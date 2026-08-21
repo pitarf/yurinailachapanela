@@ -946,11 +946,11 @@
       "price": null,
       "category": "Cozinha – Utensílios",
       "purchaseUrl": "https://shopee.com.br/Conjunto-com-6-ou-12-Pratos-Nadir-P%C3%A9tala-%E2%80%93-Escolha-Raso-Fundo-i.1502033735.22198561787?extraParams=%7B%22display_model_id%22%3A189618527111%2C%22model_selection_logic%22%3A3%7D",
-      "imageUrl": "https://down-br.img.susercontent.com/file/br-11134207-820mb-mqwowm2uaiv832",
+      "imageUrl": "/pratos_nadir_petala.jpg",
       "status": "AVAILABLE",
       "order": 59,
       "createdAt": "2026-08-20T18:20:07.673Z",
-      "updatedAt": "2026-08-21T21:09:32.815Z",
+      "updatedAt": "2026-08-21T21:23:01.997Z",
       "reservation": null
     },
     {
@@ -961,11 +961,11 @@
       "price": null,
       "category": "Mesa Posta – Pratos",
       "purchaseUrl": "https://shopee.com.br/Conjunto-com-6-ou-12-Pratos-Nadir-P%C3%A9tala-%E2%80%93-Escolha-Raso-Fundo-i.1502033735.22198561787?extraParams=%7B%22display_model_id%22%3A189618527111%2C%22model_selection_logic%22%3A3%7D",
-      "imageUrl": "https://down-br.img.susercontent.com/file/br-11134207-7r98o-m671nd8e3k284b",
+      "imageUrl": "/pratos_nadir_petala.jpg",
       "status": "AVAILABLE",
       "order": 60,
       "createdAt": "2026-08-20T18:20:07.675Z",
-      "updatedAt": "2026-08-21T21:16:12.955Z",
+      "updatedAt": "2026-08-21T21:23:01.997Z",
       "reservation": null
     },
     {
