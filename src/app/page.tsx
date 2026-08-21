@@ -56,9 +56,9 @@ export default async function Home() {
 
   const coupleNames = settings?.coupleNames || 'Naila & Yuri';
   const pixDetails = {
-    pixKey: settings?.pixKey || 'nailaeyuri@pix.com',
-    pixReceiver: settings?.pixReceiver || 'Naila & Yuri Ltda',
-    pixCity: settings?.pixCity || 'São Paulo',
+    pixKey: settings?.pixKey || '21991344006',
+    pixReceiver: settings?.pixReceiver || 'Yuri Nogueira',
+    pixCity: settings?.pixCity || 'Rio de Janeiro',
   };
 
   const historyParagraphs: string[] = settings?.historyText
