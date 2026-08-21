@@ -496,7 +496,7 @@ export default function AdminPanel({
             <p className="text-[9px] tracking-widest font-sans text-zinc-400 mt-1 uppercase">Gestão da Plataforma</p>
           </div>
 
-          <nav className="flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-visible">
+          <nav className="flex flex-row md:flex-col gap-1 overflow-x-auto md:overflow-visible no-scrollbar scrollbar-none">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'gifts', label: 'Presentes', icon: Gift },

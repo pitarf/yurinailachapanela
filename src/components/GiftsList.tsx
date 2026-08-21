@@ -67,13 +67,13 @@ export default function GiftsList({ initialGifts, pixDetails, showPrices = false
     <div className="w-full">
       {/* Search and Filters - Otimizados para Mobile e Desktop */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6 sm:mb-8 md:mb-12">
-        {/* Category Filters - Scroll horizontal suave no celular */}
-        <div className="w-full md:w-auto flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none snap-x touch-pan-x">
+        {/* Category Filters - Scroll horizontal invisível no celular e quebra elegante no desktop */}
+        <div className="w-full md:flex-1 flex items-center md:flex-wrap gap-1.5 sm:gap-2 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0 no-scrollbar scrollbar-none snap-x touch-pan-x">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-sans tracking-wider uppercase whitespace-nowrap transition-all duration-300 border shrink-0 snap-start ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-sans tracking-wider uppercase whitespace-nowrap transition-all duration-300 border shrink-0 snap-start ${
                 activeCategory === category
                   ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-white dark:text-zinc-950 dark:border-white shadow-sm'
                   : 'bg-white dark:bg-zinc-900 text-zinc-600 border-zinc-200 hover:border-zinc-400 dark:text-zinc-400 dark:border-zinc-800'
