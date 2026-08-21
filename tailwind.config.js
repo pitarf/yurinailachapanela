@@ -19,8 +19,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        serif: ['var(--font-playfair)', 'Didot', 'Bodoni MT', 'serif'],
-        script: ['var(--font-alex-brush)', 'cursive'],
+        serif: ['var(--font-vogue)', 'Didot', 'Bodoni MT', 'serif'],
+        script: ['var(--font-nautica)', 'cursive'],
         sans: ['var(--font-inter)', 'sans-serif'],
       },
       borderRadius: {

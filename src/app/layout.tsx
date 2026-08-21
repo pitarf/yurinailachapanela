@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display, Alex_Brush } from 'next/font/google';
+import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 import './globals.css';
 
@@ -8,15 +9,16 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
+const vogue = localFont({
+  src: '../fonts/vogue.ttf',
+  variable: '--font-vogue',
+  display: 'swap',
 });
 
-const alexBrush = Alex_Brush({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-alex-brush',
+const nautica = localFont({
+  src: '../fonts/nautica.ttf',
+  variable: '--font-nautica',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -30,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${playfair.variable} ${alexBrush.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${vogue.variable} ${nautica.variable}`}>
       <body className="antialiased min-h-screen bg-white text-brand-black">
         {children}
         <Toaster position="top-center" richColors />
