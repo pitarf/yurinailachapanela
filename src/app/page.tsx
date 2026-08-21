@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { getEventData, getSystemSettings, getGiftsData, getPhotosData } from '@/lib/json-db';
 import Countdown from '@/components/Countdown';
 import Logo from '@/components/Logo';
@@ -102,14 +103,29 @@ export default async function Home() {
               <span className="text-zinc-950 font-bold">{new Date(eventDate).toLocaleDateString('pt-BR')}</span>
             </div>
 
-            {/* Título e Nomes com Presença Marcante */}
-            <div>
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-tight text-zinc-950 leading-[1.05]">
-                {(eventTitle || 'Chá de Panela').replace(/Naila & Yuri/gi, '').trim()}
+            {/* Título Oficial Editorial Personalizado (Vogue + Nautica + Popcorn) */}
+            <div className="pt-2 select-none">
+              <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5 flex-wrap">
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-zinc-950 font-normal uppercase">
+                  NAILA
+                </span>
+                <div className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0">
+                  <Image
+                    src="/SIMBOL_POP_BLACK.png"
+                    alt="Símbolo Pipoca Naila & Yuri"
+                    width={40}
+                    height={40}
+                    className="object-contain w-full h-full"
+                    priority
+                  />
+                </div>
+                <span className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-zinc-950 font-normal uppercase">
+                  YURI
+                </span>
+              </div>
+              <h1 className="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-zinc-850 block -mt-2 sm:-mt-3 md:-mt-4 font-normal tracking-normal italic ml-1 sm:ml-2">
+                Chá de Panela
               </h1>
-              <span className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-zinc-850 block mt-2 font-normal italic tracking-normal select-none">
-                {coupleNames}
-              </span>
             </div>
           </div>
 
