@@ -103,11 +103,11 @@ export default function GiftReservationModal({
                 {gift.name}
               </h3>
               <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
-                {showPrices && gift.price > 0 && (
+                {showPrices && gift.price != null && Number(gift.price) > 0 && (
                   <div>
                     <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Preço Estimado</span>
                     <p className="font-serif text-xl text-zinc-800 dark:text-zinc-200 font-light">
-                      {gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      {Number(gift.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </p>
                   </div>
                 )}

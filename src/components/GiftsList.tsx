@@ -163,13 +163,13 @@ export default function GiftsList({ initialGifts, pixDetails, showPrices = false
                   </div>
 
                   <div className="space-y-2 pt-1">
-                    {showPrices && gift.price > 0 && (
+                    {showPrices && gift.price != null && Number(gift.price) > 0 && (
                       <div>
                         <span className="text-[7px] sm:text-[8px] text-zinc-400 uppercase tracking-widest font-sans block">
                           Preço Estimado
                         </span>
                         <p className="font-serif text-xs sm:text-sm font-light text-zinc-900 dark:text-zinc-150">
-                          {gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          {Number(gift.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </p>
                       </div>
                     )}

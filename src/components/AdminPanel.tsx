@@ -185,8 +185,8 @@ export default function AdminPanel({
   const totalGifts = gifts.length;
   const reservedGifts = gifts.filter((g) => g.status === 'RESERVED').length;
   const availableGifts = totalGifts - reservedGifts;
-  const totalValue = gifts.reduce((acc, curr) => acc + curr.price, 0);
-  const reservedValue = gifts.filter((g) => g.status === 'RESERVED').reduce((acc, curr) => acc + curr.price, 0);
+  const totalValue = gifts.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
+  const reservedValue = gifts.filter((g) => g.status === 'RESERVED').reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
 
   // Lógica de Scraping Open Graph
   const handleScrape = async () => {
@@ -271,7 +271,7 @@ export default function AdminPanel({
       id: gift.id,
       name: gift.name,
       description: gift.description || '',
-      price: gift.price.toString(),
+      price: gift.price != null ? gift.price.toString() : '',
       category: gift.category,
       purchaseUrl: gift.purchaseUrl || '',
       imageUrl: gift.imageUrl || '',
@@ -592,7 +592,7 @@ export default function AdminPanel({
                             <p className="text-[10px] text-zinc-400 font-light mt-0.5">{gift.reservation?.email}</p>
                           </td>
                           <td className="py-4 font-serif text-zinc-850 dark:text-zinc-200">{gift.name}</td>
-                          <td className="py-4 font-mono">{gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                          <td className="py-4 font-mono">{gift.price != null && !isNaN(Number(gift.price)) && Number(gift.price) > 0 ? Number(gift.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</td>
                           <td className="py-4 text-zinc-400">
                             {new Date(gift.reservation?.createdAt).toLocaleDateString('pt-BR')}
                           </td>
@@ -935,7 +935,7 @@ export default function AdminPanel({
                           )}
                         </td>
                         <td className="py-3 text-zinc-500">{gift.category}</td>
-                        <td className="py-3 font-mono">{gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td className="py-3 font-mono">{gift.price != null && !isNaN(Number(gift.price)) && Number(gift.price) > 0 ? Number(gift.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</td>
                         <td className="py-3">
                           <div className="flex flex-col gap-1">
                             <span
@@ -1025,7 +1025,7 @@ export default function AdminPanel({
                           <td className="py-4 text-zinc-500 font-light max-w-xs truncate" title={gift.reservation?.notes}>
                             {gift.reservation?.notes || '-'}
                           </td>
-                          <td className="py-4 font-mono">{gift.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                          <td className="py-4 font-mono">{gift.price != null && !isNaN(Number(gift.price)) && Number(gift.price) > 0 ? Number(gift.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</td>
                           <td className="py-4 text-zinc-400">
                             {new Date(gift.reservation?.createdAt).toLocaleDateString('pt-BR')}
                           </td>
