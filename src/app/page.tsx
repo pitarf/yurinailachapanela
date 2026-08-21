@@ -104,26 +104,29 @@ export default async function Home() {
             </div>
 
             {/* Título Oficial Editorial Personalizado (Vogue + Nautica + Popcorn) */}
-            <div className="pt-2 select-none">
-              <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5 flex-wrap">
-                <span className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-zinc-950 font-normal uppercase">
+            <div className="pt-2 select-none relative">
+              {/* Linha Superior: NAILA [pipoca] YURI (Vogue) */}
+              <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+                <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-normal text-zinc-950 font-normal uppercase leading-none">
                   NAILA
                 </span>
-                <div className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0">
+                <div className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0 -translate-y-0.5">
                   <Image
                     src="/SIMBOL_POP_BLACK.png"
                     alt="Símbolo Pipoca Naila & Yuri"
-                    width={40}
-                    height={40}
+                    width={44}
+                    height={44}
                     className="object-contain w-full h-full"
                     priority
                   />
                 </div>
-                <span className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-zinc-950 font-normal uppercase">
+                <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-normal text-zinc-950 font-normal uppercase leading-none">
                   YURI
                 </span>
               </div>
-              <h1 className="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-zinc-850 block -mt-2 sm:-mt-3 md:-mt-4 font-normal tracking-normal italic ml-1 sm:ml-2">
+
+              {/* Linha Inferior: Chá de Panela (Nautica Cursiva) Sobreposta com Elegância Interligada */}
+              <h1 className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-zinc-950 block -mt-5 sm:-mt-7 md:-mt-9 lg:-mt-11 font-normal tracking-normal italic ml-2 sm:ml-4 select-none relative z-10 leading-none">
                 Chá de Panela
               </h1>
             </div>
