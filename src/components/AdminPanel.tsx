@@ -43,6 +43,10 @@ import {
   BookOpen,
   Sparkles,
   FileText,
+  Mail,
+  Send,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -131,6 +135,10 @@ export default function AdminPanel({
     showPrices: settings?.showPrices ?? false,
     historyText: settings?.historyText || '',
   });
+
+  // Estados de Teste de E-mails e Lembretes (Brevo)
+  const [testEmailTarget, setTestEmailTarget] = useState('coutinhonaila20@gmail.com');
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   const handleSelectAllGifts = () => {
     if (selectedGiftIds.length === gifts.length) {
@@ -399,6 +407,29 @@ export default function AdminPanel({
       }
     } catch (err) {
       toast.error('Erro ao cancelar reserva.');
+    }
+  };
+
+  // Disparo de Teste de E-mails e Lembretes Automáticos (Brevo)
+  const handleSendTestReminder = async (type: '7days' | '3days' | 'today') => {
+    if (!testEmailTarget) {
+      toast.error('Informe o e-mail de destino para o teste.');
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const res = await fetch(`/api/cron/reminders?force=${type}&test_email=${encodeURIComponent(testEmailTarget)}`);
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`E-mail de teste (${type}) enviado com sucesso para ${testEmailTarget}!`);
+      } else {
+        toast.error(data.error || data.message || 'Falha ao enviar e-mail de teste.');
+      }
+    } catch {
+      toast.error('Erro de conexão ao disparar e-mail de teste.');
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -1048,6 +1079,129 @@ export default function AdminPanel({
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            {/* Caixa de Automação e Teste de E-mails Brevo */}
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-6 md:p-8 shadow-sm space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-5 h-5 text-zinc-900 dark:text-white" />
+                    <h2 className="font-serif text-xl font-light text-zinc-900 dark:text-white">
+                      Automação de E-mails & Lembretes (Brevo)
+                    </h2>
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-1">
+                    E-mails transacionais configurados com a API oficial da Brevo (<code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">coutinhonaila20@gmail.com</code>).
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400 text-[10px] font-sans font-semibold rounded-full uppercase tracking-wider w-fit">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> API Brevo Conectada
+                </span>
+              </div>
+
+              {/* Grid dos 4 Tipos de E-mail Automáticos */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-850/40 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-2">
+                  <span className="text-[9px] font-mono font-semibold tracking-wider text-brand-muted uppercase block">
+                    ⚡ Imediato na Reserva
+                  </span>
+                  <h3 className="font-serif text-sm font-light text-zinc-900 dark:text-white">
+                    Confirmação de Presente
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 font-light leading-relaxed">
+                    Enviado automaticamente no segundo em que o convidado escolhe o presente no site com detalhes da loja, PIX e endereço.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-850/40 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-2">
+                  <span className="text-[9px] font-mono font-semibold tracking-wider text-brand-muted uppercase block">
+                    ⏰ Faltando 7 Dias
+                  </span>
+                  <h3 className="font-serif text-sm font-light text-zinc-900 dark:text-white">
+                    Lembrete de 1 Semana
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 font-light leading-relaxed">
+                    "Falta 1 semana! Lembre-se do seu presente: se ainda não comprou ainda dá tempo, se já comprou muito obrigado!"
+                  </p>
+                </div>
+
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-850/40 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-2">
+                  <span className="text-[9px] font-mono font-semibold tracking-wider text-brand-muted uppercase block">
+                    💖 Faltando 3 Dias
+                  </span>
+                  <h3 className="font-serif text-sm font-light text-zinc-900 dark:text-white">
+                    Contagem Regressiva
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 font-light leading-relaxed">
+                    "Faltam apenas 3 dias! Última chamada para garantir o presente e rever detalhes de chegada."
+                  </p>
+                </div>
+
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-850/40 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-2">
+                  <span className="text-[9px] font-mono font-semibold tracking-wider text-brand-muted uppercase block">
+                    🎉 No Dia do Evento
+                  </span>
+                  <h3 className="font-serif text-sm font-light text-zinc-900 dark:text-white">
+                    É Hoje! Esperamos Vocês
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 font-light leading-relaxed">
+                    "É hoje! Esperamos por você às 13:00 na ADVEC (Rua Montevidéu, 1191)". Sem falar de presentes.
+                  </p>
+                </div>
+              </div>
+
+              {/* Painel de Disparo de Teste Manual */}
+              <div className="p-5 bg-zinc-50 dark:bg-zinc-850/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif text-base font-light text-zinc-900 dark:text-white flex items-center gap-2">
+                      <Send className="w-4 h-4 text-zinc-600 dark:text-zinc-300" /> Testar Envio de Lembretes Agora
+                    </h3>
+                    <p className="text-[11px] text-zinc-500">
+                      Envie um e-mail de teste real para verificar a formatação na sua caixa de entrada.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={testEmailTarget}
+                      onChange={(e) => setTestEmailTarget(e.target.value)}
+                      placeholder="seu_email@gmail.com"
+                      className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-black w-60"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    disabled={isSendingEmail}
+                    onClick={() => handleSendTestReminder('7days')}
+                    className="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 rounded-xl text-xs font-sans font-medium text-zinc-700 dark:text-zinc-200 transition-all disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-zinc-400" /> Disparar Teste: 7 Dias
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSendingEmail}
+                    onClick={() => handleSendTestReminder('3days')}
+                    className="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 rounded-xl text-xs font-sans font-medium text-zinc-700 dark:text-zinc-200 transition-all disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-zinc-400" /> Disparar Teste: 3 Dias
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSendingEmail}
+                    onClick={() => handleSendTestReminder('today')}
+                    className="px-4 py-2 bg-zinc-950 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-950 rounded-xl text-xs font-sans font-medium transition-all disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" /> Disparar Teste: É Hoje!
+                  </button>
+                </div>
               </div>
             </div>
           </div>

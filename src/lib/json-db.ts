@@ -243,6 +243,7 @@ export async function makeReservation(giftId: string, personName: string, email:
       reservation: result.reservation,
       updatedGift: result.updatedGift,
       deliveryAddress: settings?.deliveryAddress || null,
+      settings: settings || null,
     };
   } catch (err: any) {
     throw err;
