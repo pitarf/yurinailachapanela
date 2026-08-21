@@ -14,16 +14,16 @@
     "activities": [
       {
         "id": "cmt1t3kyg0000kkc6kfyxm3ea",
-        "eventId": "cmskfbfnp0000f4c69yg46dy3",
+        "eventId": "cmt1yg8zb000054c6xwo6s9j1",
         "title": "Boas-vindas & Recepção",
-        "description": "Recepção dos convidados com coquetel de boas-vindas.",
+        "description": "Almoço Feijoada ",
         "time": "13:00",
         "icon": null,
         "order": 1
       },
       {
         "id": "cmt1t3kyg0001kkc60wcd7e5k",
-        "eventId": "cmskfbfnp0000f4c69yg46dy3",
+        "eventId": "cmt1yg8zb000054c6xwo6s9j1",
         "title": "Brincadeiras do Casal",
         "description": "Momentos divertidos preparados pelos padrinhos.",
         "time": "14:30",
@@ -31,19 +31,19 @@
         "order": 2
       },
       {
-        "id": "cmt1t3kyg0002kkc6tdq5cesy",
-        "eventId": "cmskfbfnp0000f4c69yg46dy3",
-        "title": "Abertura dos Presentes",
-        "description": "Celebração e agradecimento pelos carinhos recebidos.",
+        "id": "cmt25ikpa000004l6i7udxqhn",
+        "eventId": "cmt1yg8zb000054c6xwo6s9j1",
+        "title": "Coffe Break ",
+        "description": null,
         "time": "16:00",
         "icon": null,
         "order": 3
       },
       {
-        "id": "cmt1t3kyg0003kkc67nwik7d7",
-        "eventId": "cmskfbfnp0000f4c69yg46dy3",
-        "title": "Confraternização Especial",
-        "description": "Comida boa, risadas e celebração dessa união.",
+        "id": "cmt25izya000104l6wr8eve7a",
+        "eventId": "cmt1yg8zb000054c6xwo6s9j1",
+        "title": "Término do chá de panela ",
+        "description": null,
         "time": "17:00",
         "icon": null,
         "order": 4
@@ -1882,16 +1882,16 @@
   "activities": [
     {
       "id": "cmt1t3kyg0000kkc6kfyxm3ea",
-      "eventId": "cmskfbfnp0000f4c69yg46dy3",
+      "eventId": "cmt1yg8zb000054c6xwo6s9j1",
       "title": "Boas-vindas & Recepção",
-      "description": "Recepção dos convidados com coquetel de boas-vindas.",
+      "description": "Almoço Feijoada ",
       "time": "13:00",
       "icon": null,
       "order": 1
     },
     {
       "id": "cmt1t3kyg0001kkc60wcd7e5k",
-      "eventId": "cmskfbfnp0000f4c69yg46dy3",
+      "eventId": "cmt1yg8zb000054c6xwo6s9j1",
       "title": "Brincadeiras do Casal",
       "description": "Momentos divertidos preparados pelos padrinhos.",
       "time": "14:30",
@@ -1899,19 +1899,19 @@
       "order": 2
     },
     {
-      "id": "cmt1t3kyg0002kkc6tdq5cesy",
-      "eventId": "cmskfbfnp0000f4c69yg46dy3",
-      "title": "Abertura dos Presentes",
-      "description": "Celebração e agradecimento pelos carinhos recebidos.",
+      "id": "cmt25ikpa000004l6i7udxqhn",
+      "eventId": "cmt1yg8zb000054c6xwo6s9j1",
+      "title": "Coffe Break ",
+      "description": null,
       "time": "16:00",
       "icon": null,
       "order": 3
     },
     {
-      "id": "cmt1t3kyg0003kkc67nwik7d7",
-      "eventId": "cmskfbfnp0000f4c69yg46dy3",
-      "title": "Confraternização Especial",
-      "description": "Comida boa, risadas e celebração dessa união.",
+      "id": "cmt25izya000104l6wr8eve7a",
+      "eventId": "cmt1yg8zb000054c6xwo6s9j1",
+      "title": "Término do chá de panela ",
+      "description": null,
       "time": "17:00",
       "icon": null,
       "order": 4

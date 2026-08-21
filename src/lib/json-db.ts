@@ -15,6 +15,9 @@ function readLocalJson(): any {
   return { gifts: [], photos: [], activities: [], settings: null, event: null };
 }
 
+import { sortActivitiesChronologically } from './activity-utils';
+export { sortActivitiesChronologically };
+
 // ----------------------------------------------------
 // HELPERS DE LEITURA (PRISMA PRIMÁRIO COM FALLBACK JSON)
 // ----------------------------------------------------
@@ -24,9 +27,7 @@ export async function getEventData() {
     const event = await prisma.event.findFirst({
       where: { type: 'PANTRY_PARTY' },
       include: {
-        activities: {
-          orderBy: { order: 'asc' },
-        },
+        activities: true,
       },
     });
 
@@ -41,7 +42,7 @@ export async function getEventData() {
         address: event.address,
         mapsUrl: event.mapsUrl,
         description: event.description,
-        activities: event.activities || [],
+        activities: sortActivitiesChronologically(event.activities || []),
       };
     }
   } catch (err) {
@@ -51,7 +52,7 @@ export async function getEventData() {
   const local = readLocalJson();
   return {
     ...local.event,
-    activities: local.activities || [],
+    activities: sortActivitiesChronologically(local.event?.activities || local.activities || []),
   };
 }
 

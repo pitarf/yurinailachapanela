@@ -17,6 +17,7 @@ import {
   deleteActivity,
   logout,
 } from '@/app/admin/actions';
+import { sortActivitiesChronologically } from '@/lib/activity-utils';
 import {
   LayoutDashboard,
   Gift,
@@ -108,7 +109,7 @@ export default function AdminPanel({
   const [selectedGiftIds, setSelectedGiftIds] = useState<string[]>([]);
 
   // Lista de Atividades da Programação
-  const [activities, setActivities] = useState<any[]>(event?.activities || []);
+  const [activities, setActivities] = useState<any[]>(() => sortActivitiesChronologically(event?.activities || []));
   const [editingActivity, setEditingActivity] = useState<any | null>(null);
   const [activityForm, setActivityForm] = useState({
     id: '',
@@ -300,9 +301,11 @@ export default function AdminPanel({
       if (res.success) {
         toast.success(activityForm.id ? 'Atividade atualizada!' : 'Atividade criada!');
         if (activityForm.id) {
-          setActivities((prev) => prev.map((a) => (a.id === res.activity.id ? res.activity : a)));
+          setActivities((prev) =>
+            sortActivitiesChronologically(prev.map((a) => (a.id === res.activity.id ? res.activity : a)))
+          );
         } else {
-          setActivities((prev) => [...prev, res.activity]);
+          setActivities((prev) => sortActivitiesChronologically([...prev, res.activity]));
         }
         setActivityForm({ id: '', time: '', title: '', description: '' });
         setEditingActivity(null);
