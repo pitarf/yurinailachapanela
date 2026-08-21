@@ -45,8 +45,8 @@ export default function Header() {
     <>
       <header className="w-full py-4 px-5 sm:px-8 md:px-12 border-b border-zinc-100 dark:border-zinc-850 flex items-center justify-between z-40 sticky top-0 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md transition-all">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2.5 group transition-transform active:scale-95">
-          <Logo variant="navbar" size={42} className="max-h-10" />
+        <a href="#" className="flex items-center gap-2 group transition-transform active:scale-95">
+          <Logo variant="symbol" size={38} />
           <span className="font-serif text-lg font-light tracking-wide text-zinc-900 dark:text-white hidden xs:inline-block">
             Naila & Yuri
           </span>
@@ -80,12 +80,11 @@ export default function Header() {
             Presentear
           </a>
           <button
-            type="button"
-            aria-label="Abrir Menu de Navegação"
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 border border-zinc-200 dark:border-zinc-800 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+            className="p-2 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors active:scale-95"
           >
-            <Menu className="w-5 h-5" />
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </header>
@@ -97,7 +96,7 @@ export default function Header() {
             {/* Header Drawer */}
             <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2">
-                <Logo variant="navbar" size={32} />
+                <Logo variant="symbol" size={32} />
                 <span className="font-serif text-base font-light text-zinc-900 dark:text-white">
                   Menu Principal
                 </span>
