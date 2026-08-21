@@ -125,8 +125,8 @@ export default async function Home() {
                 </span>
               </div>
 
-              {/* Linha Inferior: Chá de Panela (Nautica Cursiva) Sobreposta com Elegância Interligada */}
-              <h1 className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-zinc-950 block -mt-5 sm:-mt-7 md:-mt-9 lg:-mt-11 font-normal tracking-normal italic ml-2 sm:ml-4 select-none relative z-10 leading-none">
+              {/* Linha Inferior: Chá de Panela (Nautica Cursiva natural com presença marcante) */}
+              <h1 className="font-script text-[38px] sm:text-[48px] md:text-[58px] lg:text-[68px] text-zinc-950 block -mt-3 sm:-mt-4 md:-mt-5 lg:-mt-6 font-normal tracking-normal ml-2 sm:ml-4 select-none relative z-10 leading-none">
                 Chá de Panela
               </h1>
             </div>
