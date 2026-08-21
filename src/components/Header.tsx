@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Logo from './Logo';
+import Image from 'next/image';
 import { Menu, X, Heart, Calendar, Gift, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 
 export default function Header() {
@@ -50,9 +50,16 @@ export default function Header() {
         {/* Overlay sutil para garantir legibilidade e contraste premium */}
         <div className="absolute inset-0 bg-white/60 dark:bg-zinc-950/70 backdrop-blur-[2px] pointer-events-none" />
 
-        {/* Logo Completa com Monograma */}
-        <a href="#" className="relative z-10 flex items-center gap-3 group transition-transform active:scale-95">
-          <Logo variant="full" size={150} className="h-10 sm:h-12 w-auto drop-shadow-xs" />
+        {/* Logo Oficial Completa */}
+        <a href="#" className="relative z-10 flex items-center group transition-transform active:scale-95">
+          <Image
+            src="/logocompleta_yn.png"
+            alt="Naila & Yuri"
+            width={240}
+            height={80}
+            className="h-10 sm:h-12 md:h-14 w-auto object-contain drop-shadow-xs"
+            priority
+          />
         </a>
 
         {/* Desktop Navigation */}
@@ -99,7 +106,14 @@ export default function Header() {
             {/* Header Drawer */}
             <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2">
-                <Logo variant="full" size={120} className="h-8 w-auto" />
+                <Image
+                  src="/logocompleta_yn.png"
+                  alt="Naila & Yuri"
+                  width={160}
+                  height={50}
+                  className="h-8 sm:h-9 w-auto object-contain"
+                  priority
+                />
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
