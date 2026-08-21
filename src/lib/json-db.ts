@@ -15,6 +15,7 @@ function readLocalJson(): any {
   return { gifts: [], photos: [], activities: [], settings: null, event: null };
 }
 
+import { cache } from 'react';
 import { sortActivitiesChronologically } from './activity-utils';
 export { sortActivitiesChronologically };
 
@@ -22,7 +23,7 @@ export { sortActivitiesChronologically };
 // HELPERS DE LEITURA (PRISMA PRIMÁRIO COM FALLBACK JSON)
 // ----------------------------------------------------
 
-export async function getEventData() {
+export const getEventData = cache(async () => {
   try {
     const event = await prisma.event.findFirst({
       where: { type: 'PANTRY_PARTY' },
@@ -54,9 +55,9 @@ export async function getEventData() {
     ...local.event,
     activities: sortActivitiesChronologically(local.event?.activities || local.activities || []),
   };
-}
+});
 
-export async function getSystemSettings() {
+export const getSystemSettings = cache(async () => {
   try {
     const settings = await prisma.systemSetting.findFirst();
     if (settings) return settings;
@@ -66,9 +67,9 @@ export async function getSystemSettings() {
 
   const local = readLocalJson();
   return local.settings;
-}
+});
 
-export async function getGiftsData() {
+export const getGiftsData = cache(async () => {
   try {
     const gifts = await prisma.gift.findMany({
       orderBy: { order: 'asc' },
@@ -84,9 +85,9 @@ export async function getGiftsData() {
 
   const local = readLocalJson();
   return local.gifts || [];
-}
+});
 
-export async function getPhotosData() {
+export const getPhotosData = cache(async () => {
   try {
     const photos = await prisma.photo.findMany({
       orderBy: { order: 'asc' },
@@ -99,9 +100,9 @@ export async function getPhotosData() {
 
   const local = readLocalJson();
   return local.photos || [];
-}
+});
 
-export async function getActivitiesData() {
+export const getActivitiesData = cache(async () => {
   try {
     const activities = await prisma.activity.findMany({
       orderBy: { order: 'asc' },
@@ -114,7 +115,7 @@ export async function getActivitiesData() {
 
   const local = readLocalJson();
   return local.activities || [];
-}
+});
 
 // ----------------------------------------------------
 // HELPERS DE ESCRITA E RESERVAS

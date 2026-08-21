@@ -37,10 +37,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const event = await getEventData();
-  const settings = await getSystemSettings();
-  const gifts = await getGiftsData();
-  const photos = await getPhotosData();
+  const [event, settings, gifts, photos] = await Promise.all([
+    getEventData(),
+    getSystemSettings(),
+    getGiftsData(),
+    getPhotosData(),
+  ]);
 
   // Dados de Fallback (Padrão) caso o banco ainda não tenha sido populado
   const eventTitle = event?.title || 'Chá de Panela';
