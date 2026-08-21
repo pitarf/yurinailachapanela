@@ -15,7 +15,7 @@ export default function Logo({ className = '', variant = 'full', size = 200 }: L
           alt="Monograma Naila & Yuri"
           width={size}
           height={size}
-          className="object-contain dark:invert"
+          className="object-contain dark:invert w-auto h-auto"
           priority
         />
       </div>
@@ -30,7 +30,7 @@ export default function Logo({ className = '', variant = 'full', size = 200 }: L
           alt="Símbolo Popyn Naila & Yuri"
           width={size}
           height={size}
-          className="object-contain dark:invert"
+          className="object-contain dark:invert w-auto h-auto"
           priority
         />
       </div>
@@ -43,8 +43,8 @@ export default function Logo({ className = '', variant = 'full', size = 200 }: L
         src="/logocompleta_yn.png"
         alt="Logo Naila & Yuri"
         width={size}
-        height={size / 2}
-        className="object-contain dark:invert"
+        height={Math.round(size / 2)}
+        className="object-contain dark:invert w-auto h-auto"
         priority
       />
     </div>

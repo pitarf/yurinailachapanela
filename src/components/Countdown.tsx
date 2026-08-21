@@ -22,7 +22,7 @@ function calculateTimeLeft(targetDate: string): TimeLeft | null {
 }
 
 export default function Countdown({ targetDate }: { targetDate: string }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() => calculateTimeLeft(targetDate));
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -36,14 +36,20 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const displayTime = timeLeft || {
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  };
+  if (!mounted) {
+    return (
+      <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-400 select-none" suppressHydrationWarning>
+        <span className="text-[9px] sm:text-[10px] tracking-widest font-sans uppercase text-zinc-400 font-semibold mr-1">
+          Faltam:
+        </span>
+        <span className="font-serif text-sm sm:text-base font-light text-zinc-400">
+          Carregando contagem...
+        </span>
+      </div>
+    );
+  }
 
-  const isFinished = mounted && !timeLeft;
+  const isFinished = !timeLeft;
 
   if (isFinished) {
     return (
@@ -54,20 +60,20 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
   }
 
   const items = [
-    { value: displayTime.days, label: 'dias' },
-    { value: displayTime.hours, label: 'horas' },
-    { value: displayTime.minutes, label: 'min' },
-    { value: displayTime.seconds, label: 'seg' },
+    { value: timeLeft.days, label: 'dias' },
+    { value: timeLeft.hours, label: 'horas' },
+    { value: timeLeft.minutes, label: 'min' },
+    { value: timeLeft.seconds, label: 'seg' },
   ];
 
   return (
-    <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-600 select-none">
+    <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-600 select-none" suppressHydrationWarning>
       <span className="text-[9px] sm:text-[10px] tracking-widest font-sans uppercase text-zinc-400 font-semibold mr-1">
         Faltam:
       </span>
       {items.map((item, idx) => (
         <div key={item.label} className="inline-flex items-baseline gap-0.5">
-          <span className="font-serif text-base sm:text-lg font-medium text-zinc-900 tabular-nums">
+          <span className="font-serif text-base sm:text-lg font-medium text-zinc-900 tabular-nums" suppressHydrationWarning>
             {item.value.toString().padStart(2, '0')}
           </span>
           <span className="text-[9px] font-sans text-zinc-400 font-normal">
