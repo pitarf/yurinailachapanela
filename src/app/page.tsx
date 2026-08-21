@@ -110,12 +110,12 @@ export default async function Home() {
                 <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-normal text-zinc-950 font-normal uppercase leading-none">
                   NAILA
                 </span>
-                <div className="relative w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0 -translate-y-0.5">
+                <div className="relative w-8 h-8 sm:w-11 sm:h-11 md:w-13 md:h-13 lg:w-14 lg:h-14 flex items-center justify-center shrink-0">
                   <Image
                     src="/SIMBOL_POP_BLACK.png"
                     alt="Símbolo Pipoca Naila & Yuri"
-                    width={44}
-                    height={44}
+                    width={64}
+                    height={64}
                     className="object-contain w-full h-full"
                     priority
                   />
