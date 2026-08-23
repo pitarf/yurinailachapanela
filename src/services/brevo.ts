@@ -454,9 +454,20 @@ export async function sendReservationConfirmationEmail({
     </p>
   `;
 
+  const recipients = [{ email, name: personName }];
+
+  // Notificar também Naila & Yuri caso o e-mail da noiva não seja o mesmo de quem reservou
+  const adminNotificationEmail = process.env.BREVO_SENDER_EMAIL || 'coutinhonaila20@gmail.com';
+  if (adminNotificationEmail && email.toLowerCase() !== adminNotificationEmail.toLowerCase()) {
+    recipients.push({
+      email: adminNotificationEmail,
+      name: 'Naila & Yuri (Noivos)',
+    });
+  }
+
   return await sendBrevoEmail({
-    to: [{ email, name: personName }],
-    subject: `🎁 Confirmação de Presente: ${giftName} — Chá de Panela Naila & Yuri`,
+    to: recipients,
+    subject: `🎁 Presente Reservado: ${giftName} (por ${personName}) — Chá de Panela Naila & Yuri`,
     htmlContent: getBaseEmailLayout({
       eyebrow: 'CHÁ DE PANELA',
       title: 'NAILA & YURI',

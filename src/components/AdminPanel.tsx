@@ -7,6 +7,7 @@ import {
   saveGift,
   deleteGift,
   cancelReservation,
+  resendReservationEmail,
   saveSettings,
   saveEvent,
   savePhoto,
@@ -139,6 +140,23 @@ export default function AdminPanel({
   // Estados de Teste de E-mails e Lembretes (Brevo)
   const [testEmailTarget, setTestEmailTarget] = useState('coutinhonaila20@gmail.com');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [sendingResendGiftId, setSendingResendGiftId] = useState<string | null>(null);
+
+  const handleResendReservation = async (giftId: string, guestEmail: string) => {
+    setSendingResendGiftId(giftId);
+    try {
+      const res = await resendReservationEmail(giftId);
+      if (res.success) {
+        toast.success(`E-mail de confirmação reenviado com sucesso para ${guestEmail}!`);
+      } else {
+        toast.error(res.error || 'Erro ao reenviar e-mail de confirmação.');
+      }
+    } catch {
+      toast.error('Erro de conexão ao reenviar e-mail.');
+    } finally {
+      setSendingResendGiftId(null);
+    }
+  };
 
   const handleSelectAllGifts = () => {
     if (selectedGiftIds.length === gifts.length) {
@@ -1061,12 +1079,32 @@ export default function AdminPanel({
                             {new Date(gift.reservation?.createdAt).toLocaleDateString('pt-BR')}
                           </td>
                           <td className="py-4 text-right">
-                            <button
-                              onClick={() => handleCancelReservation(gift.id)}
-                              className="px-3 py-2 border border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg text-red-650 dark:text-red-400 flex items-center gap-1.5 text-[11px] font-sans font-medium transition-colors ml-auto"
-                            >
-                              <XCircle className="w-3.5 h-3.5" /> Liberar Item
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleResendReservation(gift.id, gift.reservation?.email || '')}
+                                disabled={sendingResendGiftId === gift.id}
+                                className="px-3 py-2 border border-zinc-200 dark:border-zinc-750 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-700 dark:text-zinc-200 flex items-center gap-1.5 text-[11px] font-sans font-medium transition-colors disabled:opacity-50"
+                                title="Reenviar e-mail de confirmação para o convidado e noivos"
+                              >
+                                {sendingResendGiftId === gift.id ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
+                                    <span>Enviando...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Mail className="w-3.5 h-3.5 text-zinc-500" />
+                                    <span>Reenviar E-mail</span>
+                                  </>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleCancelReservation(gift.id)}
+                                className="px-3 py-2 border border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg text-red-650 dark:text-red-400 flex items-center gap-1.5 text-[11px] font-sans font-medium transition-colors"
+                              >
+                                <XCircle className="w-3.5 h-3.5" /> Liberar Item
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

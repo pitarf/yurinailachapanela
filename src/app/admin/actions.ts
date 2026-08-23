@@ -81,6 +81,43 @@ export async function cancelReservation(giftId: string) {
   return cancelGiftReservation(giftId);
 }
 
+// Reenviar E-mail de Confirmação Manualmente
+export async function resendReservationEmail(giftId: string) {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+
+  const { getGiftsData, getSystemSettings } = await import('@/lib/json-db');
+  const { sendReservationConfirmationEmail } = await import('@/services/brevo');
+
+  const gifts = (await getGiftsData()) as any[];
+  const gift = gifts.find((g: any) => g.id === giftId);
+
+  if (!gift || !gift.reservation) {
+    return { success: false, error: 'Reserva não encontrada para este presente.' };
+  }
+
+  const settings = await getSystemSettings();
+
+  const sendResult = await sendReservationConfirmationEmail({
+    personName: gift.reservation.personName,
+    email: gift.reservation.email,
+    giftName: gift.name,
+    giftCategory: gift.category,
+    giftImageUrl: gift.imageUrl,
+    purchaseUrl: gift.purchaseUrl,
+    deliveryAddress: settings?.deliveryAddress,
+    pixKey: settings?.pixKey,
+    pixReceiver: settings?.pixReceiver,
+  });
+
+  if (!sendResult.success) {
+    return { success: false, error: sendResult.error || 'Erro ao disparar e-mail via Brevo.' };
+  }
+
+  return { success: true, messageId: sendResult.messageId };
+}
+
 // Salvar Configurações Globais (Endereço, PIX, SEO, Textos)
 export async function saveSettings(formData: {
   coupleNames?: string;
