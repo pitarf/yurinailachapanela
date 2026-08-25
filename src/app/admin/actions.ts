@@ -7,6 +7,10 @@ import {
   bulkDeleteGiftItems,
   bulkUpdateGiftStatusItems,
   cancelGiftReservation,
+  reorderGiftsItems,
+  sortGiftsAlphabeticallyItems,
+  moveGiftItemOrder,
+  updateGiftOrderItem,
   updateSystemSettings,
   updateEventDetails,
   saveGalleryPhoto,
@@ -151,6 +155,38 @@ export async function bulkUpdateGiftStatus(ids: string[], status: 'AVAILABLE' | 
     throw new Error('Não autorizado');
   }
   return bulkUpdateGiftStatusItems(ids, status);
+}
+
+// Reordenar Lista de Presentes por IDs
+export async function reorderGifts(orderedIds: string[]) {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+  return reorderGiftsItems(orderedIds);
+}
+
+// Ordenar Todos os Presentes em Ordem Alfabética (A-Z)
+export async function sortGiftsAlphabetically() {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+  return sortGiftsAlphabeticallyItems();
+}
+
+// Mover Presente para Cima ou para Baixo na Ordem
+export async function moveGiftOrder(giftId: string, direction: 'up' | 'down') {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+  return moveGiftItemOrder(giftId, direction);
+}
+
+// Atualizar Número de Ordem Personalizado de um Presente
+export async function updateGiftCustomOrder(giftId: string, newOrder: number) {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+  return updateGiftOrderItem(giftId, newOrder);
 }
 
 // Salvar Informações do Evento

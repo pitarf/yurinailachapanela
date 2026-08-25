@@ -8,6 +8,10 @@ import {
   deleteGift,
   cancelReservation,
   resendReservationEmail,
+  reorderGifts,
+  sortGiftsAlphabetically,
+  moveGiftOrder,
+  updateGiftCustomOrder,
   saveSettings,
   saveEvent,
   savePhoto,
@@ -48,6 +52,10 @@ import {
   Send,
   Clock,
   CheckCircle2,
+  ArrowDownAZ,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -155,6 +163,75 @@ export default function AdminPanel({
       toast.error('Erro de conexão ao reenviar e-mail.');
     } finally {
       setSendingResendGiftId(null);
+    }
+  };
+
+  const [isSorting, setIsSorting] = useState(false);
+  const [movingGiftId, setMovingGiftId] = useState<string | null>(null);
+
+  // Ordenar lista de presentes de A a Z
+  const handleSortAlphabetical = async () => {
+    setIsSorting(true);
+    try {
+      const res = await sortGiftsAlphabetically();
+      if (res.success) {
+        const sorted = [...gifts]
+          .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }))
+          .map((g, idx) => ({ ...g, order: idx + 1 }));
+        setGifts(sorted);
+        toast.success('Presentes ordenados alfabeticamente (A-Z) com sucesso!');
+        router.refresh();
+      } else {
+        toast.error('Não foi possível ordenar os presentes.');
+      }
+    } catch {
+      toast.error('Erro de conexão ao ordenar presentes.');
+    } finally {
+      setIsSorting(false);
+    }
+  };
+
+  // Mover presente para cima ou para baixo
+  const handleMoveGift = async (giftId: string, direction: 'up' | 'down') => {
+    const index = gifts.findIndex((g) => g.id === giftId);
+    if (index === -1) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= gifts.length) return;
+
+    setMovingGiftId(giftId);
+
+    // Optimistic UI update
+    const newGifts = [...gifts];
+    const temp = newGifts[index];
+    newGifts[index] = newGifts[targetIndex];
+    newGifts[targetIndex] = temp;
+    const reordered = newGifts.map((g, i) => ({ ...g, order: i + 1 }));
+    setGifts(reordered);
+
+    try {
+      await moveGiftOrder(giftId, direction);
+      router.refresh();
+    } catch {
+      toast.error('Erro ao salvar nova posição do presente.');
+    } finally {
+      setMovingGiftId(null);
+    }
+  };
+
+  // Alterar número da ordem diretamente
+  const handleUpdateOrder = async (giftId: string, newOrderVal: number) => {
+    if (isNaN(newOrderVal) || newOrderVal < 1) return;
+    try {
+      await updateGiftCustomOrder(giftId, newOrderVal);
+      setGifts((prev) =>
+        prev
+          .map((g) => (g.id === giftId ? { ...g, order: newOrderVal } : g))
+          .sort((a, b) => (a.order || 0) - (b.order || 0))
+      );
+      toast.success('Posição do presente atualizada com sucesso!');
+      router.refresh();
+    } catch {
+      toast.error('Erro ao atualizar posição do presente.');
     }
   };
 
@@ -882,35 +959,63 @@ export default function AdminPanel({
             {/* Tabela de Presentes Cadastrados */}
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-6 md:p-8 shadow-sm relative">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h2 className="font-serif text-xl font-light text-zinc-900 dark:text-white">
-                  Presentes Cadastrados ({gifts.length})
-                </h2>
+                <div>
+                  <h2 className="font-serif text-xl font-light text-zinc-900 dark:text-white">
+                    Presentes Cadastrados ({gifts.length})
+                  </h2>
+                  <p className="text-[11px] text-zinc-500 font-light mt-0.5">
+                    Defina a ordem de exibição na lista pública ou ordene em A-Z com 1 clique.
+                  </p>
+                </div>
 
-                {/* Barra de Ações em Massa */}
-                {selectedGiftIds.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 px-4 py-2 rounded-xl text-xs shadow-lg animate-fade-in">
-                    <span className="font-semibold">{selectedGiftIds.length} selecionado(s)</span>
-                    <div className="h-4 w-px bg-zinc-700 dark:bg-zinc-300 mx-1" />
-                    <button
-                      onClick={handleBulkDelete}
-                      className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3 h-3" /> Excluir Selecionados
-                    </button>
-                    <button
-                      onClick={() => handleBulkStatus('AVAILABLE')}
-                      className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors"
-                    >
-                      Marcar Disponível
-                    </button>
-                    <button
-                      onClick={() => handleBulkStatus('RESERVED')}
-                      className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors"
-                    >
-                      Marcar Reservado
-                    </button>
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Botão de Ordenação Alfabética A-Z */}
+                  <button
+                    type="button"
+                    onClick={handleSortAlphabetical}
+                    disabled={isSorting}
+                    className="px-3.5 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 rounded-xl text-xs font-sans font-medium flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50"
+                    title="Ordenar todos os produtos por ordem alfabética de A a Z"
+                  >
+                    {isSorting ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
+                        <span>Ordenando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDownAZ className="w-4 h-4 text-zinc-600 dark:text-zinc-300" />
+                        <span>Ordenar A-Z (Alfabético)</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Barra de Ações em Massa */}
+                  {selectedGiftIds.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 px-4 py-2 rounded-xl text-xs shadow-lg animate-fade-in">
+                      <span className="font-semibold">{selectedGiftIds.length} selecionado(s)</span>
+                      <div className="h-4 w-px bg-zinc-700 dark:bg-zinc-300 mx-1" />
+                      <button
+                        onClick={handleBulkDelete}
+                        className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" /> Excluir
+                      </button>
+                      <button
+                        onClick={() => handleBulkStatus('AVAILABLE')}
+                        className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors"
+                      >
+                        Disponível
+                      </button>
+                      <button
+                        onClick={() => handleBulkStatus('RESERVED')}
+                        className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-sans text-[10px] tracking-wider uppercase font-semibold transition-colors"
+                      >
+                        Reservado
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -931,6 +1036,7 @@ export default function AdminPanel({
                           )}
                         </button>
                       </th>
+                      <th className="py-3 font-semibold w-24 text-center">Ordem</th>
                       <th className="py-3 font-semibold w-16">Foto</th>
                       <th className="py-3 font-semibold">Produto</th>
                       <th className="py-3 font-semibold">Categoria</th>
@@ -940,7 +1046,7 @@ export default function AdminPanel({
                     </tr>
                   </thead>
                   <tbody>
-                    {gifts.map((gift) => (
+                    {gifts.map((gift, index) => (
                       <tr
                         key={gift.id}
                         className={`border-b border-zinc-50 dark:border-zinc-850 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 ${
@@ -959,6 +1065,51 @@ export default function AdminPanel({
                               <Square className="w-4 h-4" />
                             )}
                           </button>
+                        </td>
+                        <td className="py-3 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <input
+                              type="number"
+                              defaultValue={gift.order != null ? gift.order : index + 1}
+                              key={`${gift.id}-${gift.order}`}
+                              onBlur={(e) => {
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val) && val !== gift.order) {
+                                  handleUpdateOrder(gift.id, val);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  const val = parseInt((e.target as HTMLInputElement).value, 10);
+                                  if (!isNaN(val) && val !== gift.order) {
+                                    handleUpdateOrder(gift.id, val);
+                                  }
+                                }
+                              }}
+                              className="w-10 bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-750 rounded px-1 py-1 text-center font-mono text-[11px] text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
+                              title="Digite a posição desejada e clique fora ou dê Enter"
+                            />
+                            <div className="flex flex-col gap-0.5">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveGift(gift.id, 'up')}
+                                disabled={movingGiftId === gift.id || index === 0}
+                                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+                                title="Mover para Cima (posição anterior)"
+                              >
+                                <ArrowUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveGift(gift.id, 'down')}
+                                disabled={movingGiftId === gift.id || index === gifts.length - 1}
+                                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+                                title="Mover para Baixo (próxima posição)"
+                              >
+                                <ArrowDown className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
                         </td>
                         <td className="py-3">
                           <div className="relative w-10 h-10 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 rounded-lg overflow-hidden flex items-center justify-center">
@@ -1025,7 +1176,7 @@ export default function AdminPanel({
                     ))}
                     {gifts.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-12 text-center text-zinc-400 font-light font-serif">
+                        <td colSpan={8} className="py-12 text-center text-zinc-400 font-light font-serif">
                           Nenhum presente cadastrado na lista.
                         </td>
                       </tr>

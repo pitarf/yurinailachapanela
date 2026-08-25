@@ -72,7 +72,7 @@ export const getSystemSettings = cache(async () => {
 export const getGiftsData = cache(async () => {
   try {
     const gifts = await prisma.gift.findMany({
-      orderBy: { order: 'asc' },
+      orderBy: [{ order: 'asc' }, { name: 'asc' }],
       include: {
         reservation: true,
       },
@@ -84,7 +84,15 @@ export const getGiftsData = cache(async () => {
   }
 
   const local = readLocalJson();
-  return local.gifts || [];
+  const sorted = [...(local.gifts || [])].sort((a: any, b: any) => {
+    const orderA = a.order !== undefined && a.order !== null ? a.order : 999999;
+    const orderB = b.order !== undefined && b.order !== null ? b.order : 999999;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
+  });
+  return sorted;
 });
 
 export const getPhotosData = cache(async () => {
@@ -210,6 +218,113 @@ export async function bulkUpdateGiftStatusItems(ids: string[], status: 'AVAILABL
     return { success: true, count: ids.length };
   } catch (err: any) {
     console.error('Erro em bulkUpdateGiftStatus:', err.message);
+    throw err;
+  }
+}
+
+export async function reorderGiftsItems(orderedIds: string[]) {
+  try {
+    // 1. Atualiza no Prisma Neon
+    for (let i = 0; i < orderedIds.length; i++) {
+      await prisma.gift.update({
+        where: { id: orderedIds[i] },
+        data: { order: i + 1 },
+      });
+    }
+
+    // 2. Sincroniza no database.json local
+    const dbPath = path.join(process.cwd(), 'src', 'data', 'database.json');
+    if (fs.existsSync(dbPath)) {
+      const data = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+      if (data.gifts) {
+        data.gifts = data.gifts.map((g: any) => {
+          const newOrderIndex = orderedIds.indexOf(g.id);
+          if (newOrderIndex !== -1) {
+            return { ...g, order: newOrderIndex + 1, updatedAt: new Date().toISOString() };
+          }
+          return g;
+        });
+        data.gifts.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('Erro em reorderGiftsItems:', err.message);
+    throw err;
+  }
+}
+
+export async function sortGiftsAlphabeticallyItems() {
+  try {
+    const gifts = await prisma.gift.findMany();
+
+    const sortedGifts = [...gifts].sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' })
+    );
+
+    const orderedIds = sortedGifts.map((g) => g.id);
+    return await reorderGiftsItems(orderedIds);
+  } catch (err: any) {
+    console.error('Erro em sortGiftsAlphabeticallyItems:', err.message);
+    throw err;
+  }
+}
+
+export async function moveGiftItemOrder(giftId: string, direction: 'up' | 'down') {
+  try {
+    const gifts = await prisma.gift.findMany({
+      orderBy: [{ order: 'asc' }, { name: 'asc' }],
+    });
+
+    const currentIndex = gifts.findIndex((g) => g.id === giftId);
+    if (currentIndex === -1) return { success: false, error: 'Presente não encontrado' };
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= gifts.length) {
+      return { success: true }; // Já está no limite superior ou inferior
+    }
+
+    const orderedGifts = [...gifts];
+    const temp = orderedGifts[currentIndex];
+    orderedGifts[currentIndex] = orderedGifts[targetIndex];
+    orderedGifts[targetIndex] = temp;
+
+    const orderedIds = orderedGifts.map((g) => g.id);
+    return await reorderGiftsItems(orderedIds);
+  } catch (err: any) {
+    console.error('Erro em moveGiftItemOrder:', err.message);
+    throw err;
+  }
+}
+
+export async function updateGiftOrderItem(giftId: string, newOrder: number) {
+  try {
+    await prisma.gift.update({
+      where: { id: giftId },
+      data: { order: newOrder },
+    });
+
+    // Sincroniza localmente
+    const dbPath = path.join(process.cwd(), 'src', 'data', 'database.json');
+    if (fs.existsSync(dbPath)) {
+      const data = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+      if (data.gifts) {
+        data.gifts = data.gifts.map((g: any) => {
+          if (g.id === giftId) {
+            return { ...g, order: newOrder, updatedAt: new Date().toISOString() };
+          }
+          return g;
+        });
+        data.gifts.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('Erro em updateGiftOrderItem:', err.message);
     throw err;
   }
 }
