@@ -712,3 +712,169 @@ export async function sendEventDayEmail({
     }),
   });
 }
+
+/**
+ * 5. Confirmação Imediata de Presença (RSVP)
+ */
+export async function sendRsvpConfirmationEmail({
+  name,
+  email,
+  hasCompanion,
+  companionCount,
+  companionNames,
+  notes,
+  eventDate,
+  eventTime,
+  eventLocation,
+  eventAddress,
+  eventMapsUrl,
+}: {
+  name: string;
+  email: string;
+  hasCompanion: boolean;
+  companionCount?: number;
+  companionNames?: string | null;
+  notes?: string | null;
+  eventDate?: string;
+  eventTime?: string;
+  eventLocation?: string;
+  eventAddress?: string;
+  eventMapsUrl?: string;
+}) {
+  const content = `
+    <h2 class="greeting-script">Olá, ${name}</h2>
+    <p class="lead-text">
+      Que alegria imensa ter você conosco! Sua presença no nosso <strong>Chá de Panela</strong> foi <strong>confirmada com sucesso</strong>.
+    </p>
+
+    <!-- CARD DA CONFIRMAÇÃO -->
+    <div class="luxury-card">
+      <span class="card-badge">Presença Confirmada</span>
+      <h3 class="gift-title" style="font-size: 20px;">Detalhes da sua Confirmação</h3>
+
+      <div style="text-align: left; margin-top: 16px; font-size: 13px; color: #27272A; line-height: 1.8;">
+        <p style="margin: 4px 0;">👤 <strong>Titular:</strong> ${name}</p>
+        <p style="margin: 4px 0;">✉️ <strong>E-mail:</strong> ${email}</p>
+        <p style="margin: 4px 0;">
+          👥 <strong>Acompanhantes:</strong> ${
+            hasCompanion && companionCount && companionCount > 0
+              ? `Sim (${companionCount} acompanhante${companionCount > 1 ? 's' : ''})`
+              : 'Apenas você'
+          }
+        </p>
+        ${
+          companionNames
+            ? `<p style="margin: 4px 0;">📝 <strong>Nome(s) do(s) Acompanhante(s):</strong> ${companionNames}</p>`
+            : ''
+        }
+        ${
+          notes
+            ? `<p style="margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed #E4E4E7; color: #52525B; font-style: italic;">
+                "${notes}"
+              </p>`
+            : ''
+        }
+      </div>
+    </div>
+
+    <!-- DETALHES DO EVENTO -->
+    <div class="event-details-card">
+      <h4 class="event-details-title">Quando & Onde</h4>
+      <p class="event-detail-item">📅 <strong>Data:</strong> ${eventDate || 'Domingo, 11/10/2026'} às ${eventTime || '13:00'}</p>
+      <p class="event-detail-item">🍲 <strong>Almoço Feijoada Especial</strong></p>
+      <p class="event-detail-item">📍 <strong>Local:</strong> ${eventLocation || 'ADVEC Templo Auxiliar'}</p>
+      <p class="event-detail-item">🏢 <strong>Endereço:</strong> ${eventAddress || 'Rua Montevidéu, 1191 - 4º andar'}</p>
+      <div style="margin-top: 16px;">
+        <a href="${eventMapsUrl || 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191'}" target="_blank" style="display: inline-block; background-color: #FFFFFF; color: #0A0A0A; text-decoration: none; padding: 10px 24px; border-radius: 9999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+          Ver Rota no Google Maps 📍
+        </a>
+      </div>
+    </div>
+
+    <p style="text-align: center; font-size: 14px; color: #52525B; margin-top: 28px; line-height: 1.7;">
+      Estamos preparando tudo com muito amor e carinho para vivermos um dia inesquecível juntos. Nos vemos lá! 🍿💖
+    </p>
+  `;
+
+  const recipients = [{ email, name }];
+
+  const adminNotificationEmail = process.env.BREVO_SENDER_EMAIL || 'coutinhonaila20@gmail.com';
+  if (adminNotificationEmail && email.toLowerCase() !== adminNotificationEmail.toLowerCase()) {
+    recipients.push({
+      email: adminNotificationEmail,
+      name: 'Naila & Yuri (Noivos)',
+    });
+  }
+
+  return await sendBrevoEmail({
+    to: recipients,
+    subject: `✨ Presença Confirmada: ${name} ${hasCompanion && companionCount ? `(+${companionCount})` : ''} — Chá de Panela Naila & Yuri`,
+    htmlContent: getBaseEmailLayout({
+      eyebrow: 'CHÁ DE PANELA',
+      title: 'NAILA & YURI',
+      subtitle: 'CONFIRMAÇÃO DE PRESENÇA',
+      content,
+    }),
+  });
+}
+
+/**
+ * 6. Lembrete: Faltando 14 Dias (2 Semanas) para o Evento — Save the Date
+ */
+export async function send14DaysReminderEmail({
+  personName,
+  email,
+  eventDate,
+  eventTime,
+  eventLocation,
+  eventAddress,
+  eventMapsUrl,
+}: {
+  personName: string;
+  email: string;
+  eventDate?: string;
+  eventTime?: string;
+  eventLocation?: string;
+  eventAddress?: string;
+  eventMapsUrl?: string;
+}) {
+  const content = `
+    <h2 class="greeting-script">Olá, ${personName}</h2>
+    <p class="lead-text">
+      Faltam <strong>exatamente 2 semanas (14 dias)</strong> para o nosso <strong>Chá de Panela</strong>!
+    </p>
+
+    <p style="font-size: 14px; color: #52525B; line-height: 1.7; text-align: center;">
+      Passando para te desejar uma ótima semana e lembrar de salvar esta data especial com carinho na sua agenda.
+    </p>
+
+    <!-- DETALHES DO EVENTO -->
+    <div class="event-details-card" style="margin-top: 24px;">
+      <h4 class="event-details-title">Save the Date</h4>
+      <p class="event-detail-item">📅 <strong>Data:</strong> ${eventDate || 'Domingo, 11/10/2026'} às ${eventTime || '13:00'}</p>
+      <p class="event-detail-item">🍲 <strong>Almoço Feijoada Especial</strong></p>
+      <p class="event-detail-item">📍 <strong>Local:</strong> ${eventLocation || 'ADVEC Templo Auxiliar'}</p>
+      <p class="event-detail-item">🏢 <strong>Endereço:</strong> ${eventAddress || 'Rua Montevidéu, 1191 - 4º andar'}</p>
+      <div style="margin-top: 16px;">
+        <a href="${eventMapsUrl || 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191'}" target="_blank" style="display: inline-block; background-color: #FFFFFF; color: #0A0A0A; text-decoration: none; padding: 10px 24px; border-radius: 9999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+          Como Chegar no Local 📍
+        </a>
+      </div>
+    </div>
+
+    <p style="text-align: center; font-size: 14px; color: #52525B; margin-top: 24px;">
+      Mal podemos esperar para celebrar e nos divertir muito com você!
+    </p>
+  `;
+
+  return await sendBrevoEmail({
+    to: [{ email, name: personName }],
+    subject: `🗓️ Faltam 2 Semanas! Chá de Panela Naila & Yuri — Save the Date`,
+    htmlContent: getBaseEmailLayout({
+      eyebrow: 'CONTAGEM REGRESSIVA',
+      title: 'FALTAM 2 SEMANAS',
+      subtitle: 'CHÁ DE PANELA NAILA & YURI',
+      content,
+    }),
+  });
+}

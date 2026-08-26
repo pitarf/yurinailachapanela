@@ -17,6 +17,10 @@ import {
   deleteGalleryPhoto,
   saveEventActivity,
   deleteEventActivity,
+  createRsvpEntry,
+  deleteRsvpEntry,
+  getRsvpsData,
+  getEventData,
 } from '@/lib/json-db';
 
 const SESSION_COOKIE_NAME = 'naila_yuri_admin_session';
@@ -246,4 +250,107 @@ export async function deleteActivity(id: string) {
     throw new Error('Não autorizado');
   }
   return deleteEventActivity(id);
+}
+
+// Submeter Confirmação de Presença (RSVP)
+export async function submitRsvp(formData: {
+  name: string;
+  email: string;
+  hasCompanion: boolean;
+  companionCount: number;
+  companionNames?: string;
+  notes?: string;
+}) {
+  if (!formData.name?.trim() || !formData.email?.trim()) {
+    return { success: false, error: 'Nome e e-mail são obrigatórios.' };
+  }
+
+  const { sendRsvpConfirmationEmail } = await import('@/services/brevo');
+  const event = await getEventData();
+
+  const rsvpResult = await createRsvpEntry(formData);
+
+  const eventDateFormatted = event?.date
+    ? new Date(event.date).toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : 'Domingo, 11/10/2026';
+
+  // Disparo assíncrono de e-mail de confirmação sem travar resposta caso a chave não esteja ativa
+  try {
+    await sendRsvpConfirmationEmail({
+      name: formData.name,
+      email: formData.email,
+      hasCompanion: formData.hasCompanion,
+      companionCount: formData.companionCount,
+      companionNames: formData.companionNames,
+      notes: formData.notes,
+      eventDate: eventDateFormatted,
+      eventTime: event?.time || '13:00',
+      eventLocation: event?.location || 'ADVEC Templo Auxiliar',
+      eventAddress: event?.address || 'Rua Montevidéu, 1191 - 4º andar.',
+      eventMapsUrl: event?.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191',
+    });
+  } catch (err: any) {
+    console.warn('Aviso: E-mail de confirmação RSVP não pôde ser enviado imediatamente:', err?.message);
+  }
+
+  return { success: true, rsvp: rsvpResult.rsvp };
+}
+
+// Excluir Confirmação de Presença
+export async function deleteRsvp(id: string) {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+  return deleteRsvpEntry(id);
+}
+
+// Reenviar E-mail de Confirmação de Presença
+export async function resendRsvpEmail(rsvpId: string) {
+  if (!(await isAdmin())) {
+    throw new Error('Não autorizado');
+  }
+
+  const rsvps = (await getRsvpsData()) as any[];
+  const rsvp = rsvps.find((r: any) => r.id === rsvpId);
+
+  if (!rsvp) {
+    return { success: false, error: 'Confirmação de presença não encontrada.' };
+  }
+
+  const { sendRsvpConfirmationEmail } = await import('@/services/brevo');
+  const event = await getEventData();
+
+  const eventDateFormatted = event?.date
+    ? new Date(event.date).toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : 'Domingo, 11/10/2026';
+
+  const sendResult = await sendRsvpConfirmationEmail({
+    name: rsvp.name,
+    email: rsvp.email,
+    hasCompanion: rsvp.hasCompanion,
+    companionCount: rsvp.companionCount,
+    companionNames: rsvp.companionNames,
+    notes: rsvp.notes,
+    eventDate: eventDateFormatted,
+    eventTime: event?.time || '13:00',
+    eventLocation: event?.location || 'ADVEC Templo Auxiliar',
+    eventAddress: event?.address || 'Rua Montevidéu, 1191 - 4º andar.',
+    eventMapsUrl: event?.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191',
+  });
+
+  if (!sendResult.success) {
+    return { success: false, error: sendResult.error || 'Erro ao reenviar e-mail via Brevo.' };
+  }
+
+  return { success: true, messageId: sendResult.messageId };
 }

@@ -503,3 +503,89 @@ export async function deleteEventActivity(id: string) {
     throw err;
   }
 }
+
+// ----------------------------------------------------
+// HELPERS DE CONFIRMAÇÃO DE PRESENÇA (RSVP)
+// ----------------------------------------------------
+
+export const getRsvpsData = cache(async () => {
+  try {
+    const rsvps = await prisma.rsvp.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (rsvps && rsvps.length > 0) return rsvps;
+  } catch (err) {
+    console.warn('Fallback para JSON em getRsvpsData:', (err as any)?.message);
+  }
+
+  const local = readLocalJson();
+  return local.rsvps || [];
+});
+
+export async function createRsvpEntry(formData: {
+  name: string;
+  email: string;
+  hasCompanion: boolean;
+  companionCount: number;
+  companionNames?: string;
+  notes?: string;
+}) {
+  const { name, email, hasCompanion, companionCount, companionNames, notes } = formData;
+  try {
+    const created = await prisma.rsvp.create({
+      data: {
+        name,
+        email: email.trim().toLowerCase(),
+        hasCompanion: !!hasCompanion,
+        companionCount: hasCompanion ? Number(companionCount) || 1 : 0,
+        companionNames: companionNames || null,
+        notes: notes || null,
+      },
+    });
+
+    // Sincroniza localmente com database.json
+    const dbPath = path.join(process.cwd(), 'src', 'data', 'database.json');
+    if (fs.existsSync(dbPath)) {
+      const data = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+      if (!data.rsvps) data.rsvps = [];
+      data.rsvps.unshift({
+        id: created.id,
+        name: created.name,
+        email: created.email,
+        hasCompanion: created.hasCompanion,
+        companionCount: created.companionCount,
+        companionNames: created.companionNames,
+        notes: created.notes,
+        createdAt: created.createdAt.toISOString(),
+      });
+      fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+    }
+
+    return { success: true, rsvp: created };
+  } catch (err: any) {
+    console.error('Erro ao salvar RSVP no Prisma:', err.message);
+    throw err;
+  }
+}
+
+export async function deleteRsvpEntry(id: string) {
+  try {
+    await prisma.rsvp.delete({ where: { id } });
+
+    // Sincroniza localmente
+    const dbPath = path.join(process.cwd(), 'src', 'data', 'database.json');
+    if (fs.existsSync(dbPath)) {
+      const data = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+      if (data.rsvps) {
+        data.rsvps = data.rsvps.filter((r: any) => r.id !== id);
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('Erro ao deletar RSVP:', err.message);
+    throw err;
+  }
+}

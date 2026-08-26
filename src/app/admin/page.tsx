@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { isAdmin } from './actions';
-import { getGiftsData, getEventData, getSystemSettings, getPhotosData } from '@/lib/json-db';
+import { getGiftsData, getEventData, getSystemSettings, getPhotosData, getRsvpsData } from '@/lib/json-db';
 import AdminPanel from '@/components/AdminPanel';
 import type { Metadata } from 'next';
 
@@ -16,14 +16,15 @@ export const metadata: Metadata = {
 export const revalidate = 0; // Sempre ler dados em tempo real no dashboard
 
 async function getAdminData() {
-  const [gifts, event, settings, photos] = await Promise.all([
+  const [gifts, event, settings, photos, rsvps] = await Promise.all([
     getGiftsData(),
     getEventData(),
     getSystemSettings(),
     getPhotosData(),
+    getRsvpsData(),
   ]);
 
-  return { gifts, event, settings, photos };
+  return { gifts, event, settings, photos, rsvps };
 }
 
 export default async function AdminPage() {
@@ -33,7 +34,7 @@ export default async function AdminPage() {
     redirect('/admin/login');
   }
 
-  const { gifts, event, settings, photos } = await getAdminData();
+  const { gifts, event, settings, photos, rsvps } = await getAdminData();
 
   return (
     <AdminPanel
@@ -41,6 +42,7 @@ export default async function AdminPage() {
       initialEvent={event}
       initialSettings={settings}
       initialPhotos={photos}
+      initialRsvps={rsvps}
     />
   );
 }

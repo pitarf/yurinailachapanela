@@ -6,6 +6,7 @@ import GiftsList from '@/components/GiftsList';
 import Gallery from '@/components/Gallery';
 import HeroSlider from '@/components/HeroSlider';
 import Header from '@/components/Header';
+import RsvpSection from '@/components/RsvpSection';
 import type { Metadata } from 'next';
 
 export const revalidate = 0; // Garantir dados sempre em tempo real
@@ -141,17 +142,24 @@ export default async function Home() {
             <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-light">
               {eventDescription}
             </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-1">
+              <a
+                href="#presenca"
+                className="px-6 py-3 bg-zinc-950 hover:bg-zinc-850 text-white font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2"
+              >
+                <span>Confirmar Presença</span>
+                <span>✨</span>
+              </a>
               <a
                 href="#presentes"
-                className="px-6 py-3 bg-zinc-950 hover:bg-zinc-850 text-white font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2"
+                className="px-5 py-3 border border-zinc-200 hover:bg-zinc-50 text-zinc-800 font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2"
               >
                 <span>Lista de Presentes</span>
                 <span>🎁</span>
               </a>
               <a
                 href="#evento"
-                className="px-5 py-3 border border-zinc-200 hover:bg-zinc-50 text-zinc-800 font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all"
+                className="px-4 py-3 text-zinc-600 hover:text-zinc-900 font-sans text-xs font-semibold uppercase tracking-wider transition-colors"
               >
                 O Evento 📍
               </a>
@@ -254,8 +262,17 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Confirmação de Presença (RSVP) */}
+      <RsvpSection
+        eventDate={typeof event?.date === 'string' ? event.date : event?.date?.toISOString?.() || '2026-10-11T13:00:00'}
+        eventTime={eventTime}
+        eventLocation={eventLocation}
+        eventAddress={eventAddress}
+        eventMapsUrl={eventMapsUrl}
+      />
+
       {/* Lista de Presentes */}
-      <section id="presentes" className="py-20 md:py-32 px-4 sm:px-6 md:px-10 lg:px-12 max-w-[1600px] mx-auto w-full">
+      <section id="presentes" className="py-20 md:py-32 px-4 sm:px-6 md:px-10 lg:px-12 max-w-[1600px] mx-auto w-full border-t border-zinc-100">
         <div className="text-center space-y-4 mb-16">
           <span className="text-xs tracking-widest font-sans text-brand-muted uppercase block">Como presentear o casal</span>
           <h2 className="font-serif text-3xl md:text-5xl font-light text-zinc-900">Lista de Presentes</h2>

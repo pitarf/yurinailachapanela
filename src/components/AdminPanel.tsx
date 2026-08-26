@@ -12,6 +12,8 @@ import {
   sortGiftsAlphabetically,
   moveGiftOrder,
   updateGiftCustomOrder,
+  deleteRsvp,
+  resendRsvpEmail,
   saveSettings,
   saveEvent,
   savePhoto,
@@ -56,6 +58,11 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  Users,
+  UserCheck,
+  Copy,
+  Check,
+  MessageSquare,
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -63,6 +70,7 @@ interface AdminPanelProps {
   initialEvent: any;
   initialSettings: any;
   initialPhotos?: any[];
+  initialRsvps?: any[];
 }
 
 export default function AdminPanel({
@@ -70,15 +78,21 @@ export default function AdminPanel({
   initialEvent,
   initialSettings,
   initialPhotos = [],
+  initialRsvps = [],
 }: AdminPanelProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'gifts' | 'reservations' | 'schedule' | 'gallery' | 'content' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'gifts' | 'reservations' | 'rsvps' | 'schedule' | 'gallery' | 'content' | 'settings'>('dashboard');
 
   // Estados dos Dados
   const [gifts, setGifts] = useState(initialGifts);
   const [event, setEvent] = useState(initialEvent);
   const [settings, setSettings] = useState(initialSettings);
   const [photos, setPhotos] = useState(initialPhotos);
+  const [rsvps, setRsvps] = useState(initialRsvps);
+  const [rsvpSearchQuery, setRsvpSearchQuery] = useState('');
+  const [sendingResendRsvpId, setSendingResendRsvpId] = useState<string | null>(null);
+  const [copiedList, setCopiedList] = useState(false);
+  const [copiedRsvpLink, setCopiedRsvpLink] = useState(false);
 
   // Estados para edição de legendas das fotos
   const [photoCaptions, setPhotoCaptions] = useState<Record<string, string>>(() => {
@@ -290,6 +304,11 @@ export default function AdminPanel({
   const availableGifts = totalGifts - reservedGifts;
   const totalValue = gifts.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
   const reservedValue = gifts.filter((g) => g.status === 'RESERVED').reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
+
+  // Cálculos de Confirmação de Presença (RSVP)
+  const totalRsvps = rsvps.length;
+  const totalCompanionAttendees = rsvps.reduce((acc, r) => acc + (r.hasCompanion ? Number(r.companionCount) || 0 : 0), 0);
+  const totalAttendees = totalRsvps + totalCompanionAttendees;
 
   // Lógica de Scraping Open Graph
   const handleScrape = async () => {
@@ -505,8 +524,82 @@ export default function AdminPanel({
     }
   };
 
+  // Excluir Confirmação de Presença
+  const handleDeleteRsvp = async (id: string) => {
+    if (!confirm('Deseja realmente remover esta confirmação de presença?')) return;
+    try {
+      const res = await deleteRsvp(id);
+      if (res.success) {
+        setRsvps((prev) => prev.filter((r) => r.id !== id));
+        toast.success('Confirmação de presença removida com sucesso!');
+        router.refresh();
+      }
+    } catch {
+      toast.error('Erro ao remover confirmação de presença.');
+    }
+  };
+
+  // Reenviar E-mail de Confirmação de Presença
+  const handleResendRsvp = async (rsvpId: string, guestEmail: string) => {
+    setSendingResendRsvpId(rsvpId);
+    try {
+      const res = await resendRsvpEmail(rsvpId);
+      if (res.success) {
+        toast.success(`E-mail de confirmação de presença reenviado para ${guestEmail}!`);
+      } else {
+        toast.error(res.error || 'Erro ao reenviar e-mail de confirmação.');
+      }
+    } catch {
+      toast.error('Erro de conexão ao reenviar e-mail.');
+    } finally {
+      setSendingResendRsvpId(null);
+    }
+  };
+
+  // Copiar Lista Formatada de Convidados
+  const handleCopyRsvpList = () => {
+    if (rsvps.length === 0) {
+      toast.error('Nenhum convidado confirmado para copiar.');
+      return;
+    }
+
+    const totalTitulares = rsvps.length;
+    const totalAcompanhantes = rsvps.reduce((acc, r) => acc + (r.hasCompanion ? r.companionCount || 0 : 0), 0);
+    const totalGeral = totalTitulares + totalAcompanhantes;
+
+    let text = `📋 LISTA DE PRESENÇAS CONFIRMADAS — CHÁ DE PANELA NAILA & YURI\n`;
+    text += `Total de Pessoas: ${totalGeral} (${totalTitulares} titulares + ${totalAcompanhantes} acompanhantes)\n`;
+    text += `--------------------------------------------------\n\n`;
+
+    rsvps.forEach((r, idx) => {
+      text += `${idx + 1}. ${r.name} (${r.email})\n`;
+      if (r.hasCompanion && r.companionCount > 0) {
+        text += `   ↳ +${r.companionCount} acompanhante(s)${r.companionNames ? `: ${r.companionNames}` : ''}\n`;
+      }
+      if (r.notes) {
+        text += `   ↳ Recado: "${r.notes}"\n`;
+      }
+      text += `\n`;
+    });
+
+    navigator.clipboard.writeText(text);
+    setCopiedList(true);
+    toast.success('Lista de convidados copiada para a área de transferência!');
+    setTimeout(() => setCopiedList(false), 3000);
+  };
+
+  // Copiar Link Direto para Confirmação de Presença (/presenca)
+  const handleCopyDirectLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const directUrl = `${origin}/presenca`;
+    navigator.clipboard.writeText(directUrl);
+    setCopiedRsvpLink(true);
+    toast.success(`Link direto copiado: ${directUrl}`);
+    setTimeout(() => setCopiedRsvpLink(false), 3000);
+  };
+
   // Disparo de Teste de E-mails e Lembretes Automáticos (Brevo)
-  const handleSendTestReminder = async (type: '7days' | '3days' | 'today') => {
+  const handleSendTestReminder = async (type: '14days' | '7days' | '3days' | 'today') => {
     if (!testEmailTarget) {
       toast.error('Informe o e-mail de destino para o teste.');
       return;
@@ -627,6 +720,7 @@ export default function AdminPanel({
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'gifts', label: 'Presentes', icon: Gift },
               { id: 'reservations', label: 'Reservas', icon: DollarSign },
+              { id: 'rsvps', label: 'Presenças (RSVP)', icon: Users, badge: totalAttendees },
               { id: 'schedule', label: 'Programação', icon: Calendar },
               { id: 'gallery', label: 'Galeria', icon: Camera },
               { id: 'content', label: 'Textos & História', icon: BookOpen },
@@ -637,14 +731,25 @@ export default function AdminPanel({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-3 px-4 py-3 text-xs tracking-wider uppercase font-sans font-medium rounded-xl transition-all w-full min-w-max md:min-w-0 ${
+                  className={`flex items-center justify-between px-4 py-3 text-xs tracking-wider uppercase font-sans font-medium rounded-xl transition-all w-full min-w-max md:min-w-0 ${
                     activeTab === tab.id
                       ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-semibold'
                       : 'text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-850 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                  </div>
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <span className={`px-2 py-0.5 text-[10px] font-mono font-semibold rounded-full ${
+                      activeTab === tab.id
+                        ? 'bg-white/20 text-white dark:bg-black/20 dark:text-zinc-950'
+                        : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+                    }`}>
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -670,25 +775,40 @@ export default function AdminPanel({
           <div className="space-y-8 animate-fade-in">
             <div>
               <h1 className="font-serif text-3xl font-light text-zinc-900 dark:text-white">Resumo Geral</h1>
-              <p className="text-xs text-zinc-500 mt-1">Estatísticas e visão geral de reservas do Chá de Panela.</p>
+              <p className="text-xs text-zinc-500 mt-1">Estatísticas e visão geral de reservas e presenças do Chá de Panela.</p>
             </div>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {[
                 { label: 'Total Presentes', value: totalGifts, sub: 'Itens na lista' },
                 { label: 'Reservados', value: reservedGifts, sub: `${((reservedGifts / (totalGifts || 1)) * 100).toFixed(0)}% do total` },
-                { label: 'Disponíveis', value: availableGifts, sub: `${((availableGifts / (totalGifts || 1)) * 100).toFixed(0)}% restantes` },
+                {
+                  label: 'Presenças Confirmadas',
+                  value: `${totalAttendees} pessoas`,
+                  sub: `${totalRsvps} titulares + ${totalCompanionAttendees} acompanhantes`,
+                  highlight: true,
+                },
                 {
                   label: 'Arrecadação Esperada',
                   value: reservedValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
                   sub: `De ${totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} total`,
                 },
               ].map((card, i) => (
-                <div key={i} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-6 shadow-sm">
-                  <span className="text-[10px] tracking-widest font-sans text-brand-muted uppercase">{card.label}</span>
-                  <div className="font-serif text-3xl font-light mt-2 text-zinc-950 dark:text-white">{card.value}</div>
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1.5 font-light">{card.sub}</p>
+                <div key={i} className={`border rounded-popyn p-6 shadow-sm ${
+                  card.highlight
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white'
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'
+                }`}>
+                  <span className={`text-[10px] tracking-widest font-sans uppercase ${
+                    card.highlight ? 'text-zinc-400 dark:text-zinc-500' : 'text-brand-muted'
+                  }`}>{card.label}</span>
+                  <div className={`font-serif text-3xl font-light mt-2 ${
+                    card.highlight ? 'text-white dark:text-zinc-950' : 'text-zinc-950 dark:text-white'
+                  }`}>{card.value}</div>
+                  <p className={`text-xs mt-1.5 font-light ${
+                    card.highlight ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'
+                  }`}>{card.sub}</p>
                 </div>
               ))}
             </div>
@@ -1367,6 +1487,15 @@ export default function AdminPanel({
                   <button
                     type="button"
                     disabled={isSendingEmail}
+                    onClick={() => handleSendTestReminder('14days')}
+                    className="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 rounded-xl text-xs font-sans font-medium text-zinc-700 dark:text-zinc-200 transition-all disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-zinc-400" /> Disparar Teste: 14 Dias (Save the Date)
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSendingEmail}
                     onClick={() => handleSendTestReminder('7days')}
                     className="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 rounded-xl text-xs font-sans font-medium text-zinc-700 dark:text-zinc-200 transition-all disabled:opacity-50 flex items-center gap-1.5"
                   >
@@ -1391,6 +1520,199 @@ export default function AdminPanel({
                     <Send className="w-3.5 h-3.5" /> Disparar Teste: É Hoje!
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Presenças (RSVP) */}
+        {activeTab === 'rsvps' && (
+          <div className="space-y-8 animate-fade-in">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="font-serif text-3xl font-light text-zinc-900 dark:text-white">
+                  Presenças Confirmadas (RSVP)
+                </h1>
+                <p className="text-xs text-zinc-500 mt-1">
+                  Lista de convidados confirmados, acompanhantes e recadinhos deixados para os noivos.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyDirectLink}
+                  className="px-4 py-2.5 bg-white dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-750 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs"
+                >
+                  {copiedRsvpLink ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Link className="w-3.5 h-3.5" />}
+                  <span>{copiedRsvpLink ? 'Link Copiado!' : 'Copiar Link (/presenca)'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyRsvpList}
+                  className="px-4 py-2.5 bg-zinc-950 hover:bg-zinc-850 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-950 rounded-xl text-xs font-sans font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm"
+                >
+                  {copiedList ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedList ? 'Lista Copiada!' : 'Copiar Lista Completa'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Cards de Métricas de Presença */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-5 shadow-sm">
+                <span className="text-[10px] tracking-widest font-sans text-brand-muted uppercase block">
+                  Total de Pessoas Confirmadas
+                </span>
+                <div className="font-serif text-3xl font-light mt-1 text-zinc-950 dark:text-white">
+                  {totalAttendees}
+                </div>
+                <p className="text-xs text-zinc-400 mt-1 font-light">
+                  Titulares + Acompanhantes
+                </p>
+              </div>
+
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-5 shadow-sm">
+                <span className="text-[10px] tracking-widest font-sans text-brand-muted uppercase block">
+                  Convidados Titulares
+                </span>
+                <div className="font-serif text-3xl font-light mt-1 text-zinc-950 dark:text-white">
+                  {totalRsvps}
+                </div>
+                <p className="text-xs text-zinc-400 mt-1 font-light">
+                  Formulários enviados
+                </p>
+              </div>
+
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-5 shadow-sm">
+                <span className="text-[10px] tracking-widest font-sans text-brand-muted uppercase block">
+                  Acompanhantes Adicionais
+                </span>
+                <div className="font-serif text-3xl font-light mt-1 text-zinc-950 dark:text-white">
+                  {totalCompanionAttendees}
+                </div>
+                <p className="text-xs text-zinc-400 mt-1 font-light">
+                  Familiares / Convidados extras
+                </p>
+              </div>
+            </div>
+
+            {/* Tabela de Confirmações de Presença */}
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-popyn p-6 md:p-8 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="font-serif text-xl font-light text-zinc-900 dark:text-white">
+                  Lista de Convidados ({rsvps.length})
+                </h2>
+
+                <div className="relative w-full sm:w-72">
+                  <input
+                    type="text"
+                    value={rsvpSearchQuery}
+                    onChange={(e) => setRsvpSearchQuery(e.target.value)}
+                    placeholder="Buscar por nome ou e-mail..."
+                    className="w-full bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-750 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-zinc-100 dark:border-zinc-800 pb-3 text-zinc-400 uppercase tracking-widest font-sans">
+                      <th className="py-3 font-semibold">Convidado Titular</th>
+                      <th className="py-3 font-semibold">Acompanhantes</th>
+                      <th className="py-3 font-semibold">Nomes dos Acompanhantes</th>
+                      <th className="py-3 font-semibold">Mensagem / Recado</th>
+                      <th className="py-3 font-semibold">Data Confirmação</th>
+                      <th className="py-3 font-semibold text-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rsvps
+                      .filter((r) => {
+                        const query = rsvpSearchQuery.toLowerCase();
+                        return (
+                          r.name.toLowerCase().includes(query) ||
+                          r.email.toLowerCase().includes(query) ||
+                          (r.companionNames && r.companionNames.toLowerCase().includes(query))
+                        );
+                      })
+                      .map((rsvp) => (
+                        <tr
+                          key={rsvp.id}
+                          className="border-b border-zinc-50 dark:border-zinc-850 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20"
+                        >
+                          <td className="py-4">
+                            <p className="font-medium text-zinc-900 dark:text-white">{rsvp.name}</p>
+                            <p className="text-[10px] text-zinc-400 font-light mt-0.5">{rsvp.email}</p>
+                          </td>
+                          <td className="py-4">
+                            {rsvp.hasCompanion && rsvp.companionCount > 0 ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-sans font-semibold bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
+                                <Users className="w-3 h-3 text-zinc-500" />
+                                +{rsvp.companionCount} pessoa{rsvp.companionCount > 1 ? 's' : ''}
+                              </span>
+                            ) : (
+                              <span className="text-zinc-400 font-light">Apenas o titular</span>
+                            )}
+                          </td>
+                          <td className="py-4 text-zinc-600 dark:text-zinc-300 font-light max-w-xs">
+                            {rsvp.companionNames || '—'}
+                          </td>
+                          <td className="py-4 text-zinc-500 font-light max-w-xs truncate" title={rsvp.notes || ''}>
+                            {rsvp.notes ? `"${rsvp.notes}"` : '—'}
+                          </td>
+                          <td className="py-4 text-zinc-400">
+                            {rsvp.createdAt
+                              ? new Date(rsvp.createdAt).toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '—'}
+                          </td>
+                          <td className="py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleResendRsvp(rsvp.id, rsvp.email)}
+                                disabled={sendingResendRsvpId === rsvp.id}
+                                className="px-3 py-2 border border-zinc-200 dark:border-zinc-750 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-700 dark:text-zinc-200 flex items-center gap-1.5 text-[11px] font-sans font-medium transition-colors disabled:opacity-50"
+                                title="Reenviar e-mail de confirmação de presença"
+                              >
+                                {sendingResendRsvpId === rsvp.id ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
+                                    <span>Enviando...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Mail className="w-3.5 h-3.5 text-zinc-500" />
+                                    <span>Reenviar</span>
+                                  </>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRsvp(rsvp.id)}
+                                className="px-3 py-2 border border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg text-red-650 dark:text-red-400 flex items-center gap-1.5 text-[11px] font-sans font-medium transition-colors"
+                                title="Remover esta confirmação de presença"
+                              >
+                                <XCircle className="w-3.5 h-3.5" /> Excluir
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    {rsvps.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-zinc-400 font-light font-serif">
+                          Nenhuma confirmação de presença registrada ainda.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

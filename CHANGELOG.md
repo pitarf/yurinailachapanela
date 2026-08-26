@@ -2,6 +2,24 @@
 
 Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.4.0] - 2026-08-26
+### Adicionado
+- **Sistema de Confirmação de Presença (RSVP) & Link Direto**:
+  - Nova página direta `/presenca` com SEO completo, cards informativos do evento, contador regressivo e formulário focado para envio no WhatsApp/redes sociais.
+  - Slugs alternativos de redirecionamento automático: `/rsvp` e `/confirmar-presenca`.
+  - Botão **"Copiar Link (/presenca)"** adicionado no cabeçalho da aba de Presenças no Painel Administrativo.
+  - Seção `#presenca` na Landing Page com formulário mobile-first sofisticado: titular, acompanhantes, quantidade (1 a 5), nomes e recadinho aos noivos.
+  - Modelo `Rsvp` no Neon PostgreSQL (`prisma/schema.prisma`) e persistência JSON (`src/lib/json-db.ts`).
+  - Nova aba **"Presenças (RSVP)"** no Painel Admin com busca, reenvio de e-mail e cópia formatada da lista.
+
+## [1.3.0] - 2026-08-21
+### Adicionado
+- Integração oficial com **Brevo API** para envio de e-mails transacionais.
+- Disparo imediato de e-mail de confirmação de presente com cópia para os noivos (`coutinhonaila20@gmail.com`).
+- Botão de reenvio manual de e-mail de reserva no painel administrativo.
+- Botão de ordenação alfabética (A-Z) e controles de posição (⬆️/⬇️) para os presentes da lista.
+- Atualização das capas oficiais dos pratos Nadir Pétala e Bomboniere de vidro.
+
 ## [1.2.0] - 2026-08-20
 ### Alterado & Aprimorado
 - Integração e migração completa para o banco de dados **Neon PostgreSQL** no schema isolado `yuri_naila`.

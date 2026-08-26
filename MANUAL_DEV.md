@@ -8,17 +8,38 @@ Este manual descreve a arquitetura, estrutura de pastas, modelos de dados e inst
 
 * **Framework:** Next.js (App Router) com TypeScript
 * **Estilização:** Tailwind CSS (Design System Editorial Monocromático)
-* **Camada de Dados:** Gerenciador desacoplado em JSON (`src/lib/json-db.ts` lendo de `src/data/database.json`), permitindo execução imediata na **Vercel** com zero configuração de infraestrutura ou banco externo.
+* **Banco de Dados & Persistência:**
+  * **Neon PostgreSQL** com Prisma ORM no schema isolado `yuri_naila`
+  * Gerenciador desacoplado em JSON (`src/lib/json-db.ts` e `src/data/database.json`) como fallback autônomo
+* **E-mails Transacionais & Lembretes:**
+  * Integração oficial com **Brevo API** (`src/services/brevo.ts`)
+  * Disparo de confirmação imediata para convidados e notificação para `coutinhonaila20@gmail.com`
+  * Lembretes inteligentes em `/api/cron/reminders` (14 dias, 7 dias, 3 dias e Dia do Evento) com deduplicação de e-mails
 * **Componentes Principais:**
   * `HeroSlider.tsx`: Slider fotográfico de capa com fotos de pré-wedding otimizadas em WebP.
   * `Countdown.tsx`: Contador regressivo em tempo real para a data do evento.
+  * `RsvpSection.tsx`: Seção de confirmação de presença (RSVP) com seleção de acompanhantes e recado.
   * `GiftsList.tsx`: Catálogo interativo de presentes em 5 colunas no Desktop com busca e filtros por categoria.
   * `GiftReservationModal.tsx`: Modal elegante para reservas e exibição do endereço de entrega / chave PIX.
-  * `AdminPanel.tsx`: Painel administrativo completo para controle de presentes, atividades, fotos, textos e configurações.
+  * `AdminPanel.tsx`: Painel administrativo completo para controle de presentes, presenças (RSVP), atividades, fotos, textos e configurações.
 
 ---
 
-## 2. Estrutura de Pastas
+## 2. Variáveis de Ambiente Necessárias (.env)
+
+```env
+# Banco de Dados
+DATABASE_URL="postgresql://neondb_owner:...@ep-....us-east-2.aws.neon.tech/neondb?sslmode=require&schema=yuri_naila"
+
+# E-mails (Brevo)
+BREVO_API_KEY="xkeysib-..."
+BREVO_SENDER_EMAIL="coutinhonaila20@gmail.com"
+BREVO_SENDER_NAME="Naila & Yuri"
+
+# Autenticação e Cron
+ADMIN_PASSWORD="yurienaila2026"
+CRON_SECRET="chave_secreta_cron"
+```
 
 ```
 c:/Git/React/YURIeNAIsite/

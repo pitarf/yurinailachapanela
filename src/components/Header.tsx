@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Logo from './Logo';
-import { Menu, X, Heart, Calendar, Gift, Image as ImageIcon, ShieldCheck } from 'lucide-react';
+import { Menu, X, Heart, Calendar, Gift, Image as ImageIcon, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,6 +31,7 @@ export default function Header() {
   }, [mobileMenuOpen]);
 
   const navItems = [
+    { href: '#presenca', label: 'Confirmar Presença', icon: CheckCircle2 },
     { href: '#historia', label: 'Nossa História', icon: Heart },
     { href: '#galeria', label: 'Galeria de Fotos', icon: ImageIcon },
     { href: '#evento', label: 'O Evento', icon: Calendar },
