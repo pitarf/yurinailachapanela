@@ -62,16 +62,41 @@ export default function RsvpSection({
     setIsLoading(true);
 
     try {
-      const res = await submitRsvp({
+      const payload = {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         hasCompanion: formData.hasCompanion,
         companionCount: formData.hasCompanion ? formData.companionCount : 0,
         companionNames: formData.hasCompanion ? formData.companionNames.trim() : '',
         notes: formData.notes.trim(),
-      });
+      };
 
-      if (res.success) {
+      let success = false;
+      let errorMsg = '';
+
+      try {
+        const response = await fetch('/api/rsvps', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          success = true;
+        } else {
+          errorMsg = data.error || '';
+        }
+      } catch {
+        // Fallback para Server Action caso fetch falhe
+        const serverRes = await submitRsvp(payload);
+        if (serverRes.success) {
+          success = true;
+        } else {
+          errorMsg = serverRes.error || '';
+        }
+      }
+
+      if (success) {
         setConfirmedData({
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -80,9 +105,9 @@ export default function RsvpSection({
           companionNames: formData.companionNames.trim(),
         });
         setIsSuccess(true);
-        toast.success('Presença confirmada com sucesso! Enviamos os detalhes para o seu e-mail.');
+        toast.success('Presença confirmada com sucesso! ❤️');
       } else {
-        toast.error(res.error || 'Não foi possível confirmar a presença. Tente novamente.');
+        toast.error(errorMsg || 'Não foi possível confirmar a presença. Tente novamente.');
       }
     } catch {
       toast.error('Erro de conexão ao enviar sua confirmação. Tente novamente em instantes.');
