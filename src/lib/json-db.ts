@@ -1,39 +1,11 @@
-import fs from 'fs';
-import path from 'path';
 import { prisma } from './prisma';
-
-const staticJsonPath = path.join(process.cwd(), 'src', 'data', 'database.json');
-
-function readLocalJson(): any {
-  try {
-    if (fs.existsSync(staticJsonPath)) {
-      return JSON.parse(fs.readFileSync(staticJsonPath, 'utf8'));
-    }
-  } catch (e) {
-    console.error('Erro ao ler database.json local:', e);
-  }
-  return { gifts: [], photos: [], activities: [], settings: null, event: null, rsvps: [] };
-}
-
-function safeWriteLocalJson(updater: (data: any) => void) {
-  try {
-    if (fs.existsSync(staticJsonPath)) {
-      const data = JSON.parse(fs.readFileSync(staticJsonPath, 'utf8'));
-      updater(data);
-      fs.writeFileSync(staticJsonPath, JSON.stringify(data, null, 2), 'utf8');
-    }
-  } catch (err: any) {
-    // Silencia erros de escrita em sistemas com filesystem read-only (ex: Vercel serverless runtime)
-    console.log('ℹ️ Nota: File system local em modo read-only (ignorado com sucesso na nuvem):', err?.message);
-  }
-}
-
 import { cache } from 'react';
 import { sortActivitiesChronologically } from './activity-utils';
+
 export { sortActivitiesChronologically };
 
 // ----------------------------------------------------
-// HELPERS DE LEITURA (PRISMA PRIMÁRIO COM FALLBACK JSON)
+// CONSULTAS DE LEITURA (100% NEON POSTGRESQL)
 // ----------------------------------------------------
 
 export const getEventData = cache(async () => {
@@ -59,14 +31,21 @@ export const getEventData = cache(async () => {
         activities: sortActivitiesChronologically(event.activities || []),
       };
     }
-  } catch (err) {
-    console.warn('Fallback para JSON em getEventData:', (err as any)?.message);
+  } catch (err: any) {
+    console.error('Erro ao buscar dados do evento no banco:', err?.message);
   }
 
-  const local = readLocalJson();
   return {
-    ...local.event,
-    activities: sortActivitiesChronologically(local.event?.activities || local.activities || []),
+    id: 'default_event',
+    type: 'PANTRY_PARTY',
+    title: 'Chá de Panela Naila & Yuri',
+    date: '2026-10-11T13:00:00.000Z',
+    time: '13:00',
+    location: 'ADVEC Templo Auxiliar',
+    address: 'Rua Montevidéu, 1191 - 4º andar.',
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191',
+    description: 'Estamos preparando cada detalhe com muito amor para celebrar essa nova fase das nossas vidas com vocês!',
+    activities: [],
   };
 });
 
@@ -74,12 +53,26 @@ export const getSystemSettings = cache(async () => {
   try {
     const settings = await prisma.systemSetting.findFirst();
     if (settings) return settings;
-  } catch (err) {
-    console.warn('Fallback para JSON em getSystemSettings:', (err as any)?.message);
+  } catch (err: any) {
+    console.error('Erro ao buscar configurações no banco:', err?.message);
   }
 
-  const local = readLocalJson();
-  return local.settings;
+  return {
+    id: 'default_settings',
+    coupleNames: 'Naila & Yuri',
+    siteTitle: 'Naila & Yuri | Chá de Panela',
+    siteDescription: 'Seja bem-vindo ao site de Chá de Panela e futura celebração de casamento de Naila & Yuri.',
+    siteKeywords: 'Naila, Yuri, Chá de Panela, Casamento',
+    faviconUrl: '/monograma_popyn.png',
+    ogImageUrl: '/pre-wedding/DSC01267.webp',
+    historyText: null,
+    welcomeMessage: null,
+    pixKey: '21991344006',
+    pixReceiver: 'Yuri Nogueira',
+    pixCity: 'Rio de Janeiro',
+    deliveryAddress: 'Rua Montevidéu, 1191 - 4º andar - Penha, Rio de Janeiro - RJ',
+    showPrices: false,
+  };
 });
 
 export const getGiftsData = cache(async () => {
@@ -92,20 +85,11 @@ export const getGiftsData = cache(async () => {
     });
 
     if (gifts && gifts.length > 0) return gifts;
-  } catch (err) {
-    console.warn('Fallback para JSON em getGiftsData:', (err as any)?.message);
+  } catch (err: any) {
+    console.error('Erro ao buscar presentes no banco:', err?.message);
   }
 
-  const local = readLocalJson();
-  const sorted = [...(local.gifts || [])].sort((a: any, b: any) => {
-    const orderA = a.order !== undefined && a.order !== null ? a.order : 999999;
-    const orderB = b.order !== undefined && b.order !== null ? b.order : 999999;
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
-  });
-  return sorted;
+  return [];
 });
 
 export const getPhotosData = cache(async () => {
@@ -115,45 +99,47 @@ export const getPhotosData = cache(async () => {
     });
 
     if (photos && photos.length > 0) return photos;
-  } catch (err) {
-    console.warn('Fallback para JSON em getPhotosData:', (err as any)?.message);
+  } catch (err: any) {
+    console.error('Erro ao buscar fotos no banco:', err?.message);
   }
 
-  const local = readLocalJson();
-  return local.photos || [];
+  return [];
 });
 
-export const getActivitiesData = cache(async () => {
+export const getRsvpsData = cache(async () => {
   try {
-    const activities = await prisma.activity.findMany({
-      orderBy: { order: 'asc' },
+    const rsvps = await prisma.rsvp.findMany({
+      orderBy: { createdAt: 'desc' },
     });
 
-    if (activities && activities.length > 0) return activities;
-  } catch (err) {
-    console.warn('Fallback para JSON em getActivitiesData:', (err as any)?.message);
+    if (rsvps) return rsvps;
+  } catch (err: any) {
+    console.error('Erro ao buscar presenças no banco:', err?.message);
   }
 
-  const local = readLocalJson();
-  return local.activities || [];
+  return [];
 });
 
 // ----------------------------------------------------
-// HELPERS DE ESCRITA E RESERVAS
+// OPERAÇÕES DE MUTAÇÃO / CRUD (100% NEON POSTGRESQL)
 // ----------------------------------------------------
 
-export async function saveGiftItem(formData: any) {
-  const { id, name, description, price, category, purchaseUrl, imageUrl, status } = formData;
-  const parsedPrice = price ? parseFloat(price) : null;
+export async function saveGiftItem(giftData: any) {
+  const { id, name, description, price, category, purchaseUrl, imageUrl, status } = giftData;
+  const parsedPrice = price !== undefined && price !== null && price !== '' ? parseFloat(price) : null;
 
   try {
     let event = await prisma.event.findFirst({ where: { type: 'PANTRY_PARTY' } });
     if (!event) {
       event = await prisma.event.create({
         data: {
+          title: 'Chá de Panela Naila & Yuri',
           type: 'PANTRY_PARTY',
-          title: 'Chá de Panela',
           date: new Date('2026-10-11T13:00:00.000Z'),
+          time: '13:00',
+          location: 'ADVEC Templo Auxiliar',
+          address: 'Rua Montevidéu, 1191 - 4º andar.',
+          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191',
         },
       });
     }
@@ -162,8 +148,8 @@ export async function saveGiftItem(formData: any) {
       const updated = await prisma.gift.update({
         where: { id },
         data: {
-          name,
-          description: description || null,
+          name: name.trim(),
+          description: description ? description.trim() : null,
           price: parsedPrice,
           category: category || 'Geral',
           purchaseUrl: purchaseUrl || null,
@@ -173,22 +159,24 @@ export async function saveGiftItem(formData: any) {
       });
       return { success: true, gift: updated };
     } else {
+      const count = await prisma.gift.count();
       const created = await prisma.gift.create({
         data: {
           eventId: event.id,
-          name,
-          description: description || null,
+          name: name.trim(),
+          description: description ? description.trim() : null,
           price: parsedPrice,
           category: category || 'Geral',
           purchaseUrl: purchaseUrl || null,
           imageUrl: imageUrl || null,
           status: status || 'AVAILABLE',
+          order: count + 1,
         },
       });
       return { success: true, gift: created };
     }
   } catch (err: any) {
-    console.error('Erro ao salvar presente no Prisma:', err.message);
+    console.error('Erro ao salvar presente no banco:', err.message);
     throw err;
   }
 }
@@ -237,28 +225,14 @@ export async function bulkUpdateGiftStatusItems(ids: string[], status: 'AVAILABL
 
 export async function reorderGiftsItems(orderedIds: string[]) {
   try {
-    // 1. Atualiza no Prisma Neon
-    for (let i = 0; i < orderedIds.length; i++) {
-      await prisma.gift.update({
-        where: { id: orderedIds[i] },
-        data: { order: i + 1 },
-      });
-    }
-
-    // 2. Sincroniza no database.json local com segurança
-    safeWriteLocalJson((data) => {
-      if (data.gifts) {
-        data.gifts = data.gifts.map((g: any) => {
-          const newOrderIndex = orderedIds.indexOf(g.id);
-          if (newOrderIndex !== -1) {
-            return { ...g, order: newOrderIndex + 1, updatedAt: new Date().toISOString() };
-          }
-          return g;
-        });
-        data.gifts.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-      }
-    });
-
+    await prisma.$transaction(
+      orderedIds.map((id, index) =>
+        prisma.gift.update({
+          where: { id },
+          data: { order: index + 1 },
+        })
+      )
+    );
     return { success: true };
   } catch (err: any) {
     console.error('Erro em reorderGiftsItems:', err.message);
@@ -293,16 +267,18 @@ export async function moveGiftItemOrder(giftId: string, direction: 'up' | 'down'
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (targetIndex < 0 || targetIndex >= gifts.length) {
-      return { success: true }; // Já está no limite superior ou inferior
+      return { success: true };
     }
 
-    const orderedGifts = [...gifts];
-    const temp = orderedGifts[currentIndex];
-    orderedGifts[currentIndex] = orderedGifts[targetIndex];
-    orderedGifts[targetIndex] = temp;
+    const currentGift = gifts[currentIndex];
+    const targetGift = gifts[targetIndex];
 
-    const orderedIds = orderedGifts.map((g) => g.id);
-    return await reorderGiftsItems(orderedIds);
+    await prisma.$transaction([
+      prisma.gift.update({ where: { id: currentGift.id }, data: { order: targetIndex + 1 } }),
+      prisma.gift.update({ where: { id: targetGift.id }, data: { order: currentIndex + 1 } }),
+    ]);
+
+    return { success: true };
   } catch (err: any) {
     console.error('Erro em moveGiftItemOrder:', err.message);
     throw err;
@@ -315,20 +291,6 @@ export async function updateGiftOrderItem(giftId: string, newOrder: number) {
       where: { id: giftId },
       data: { order: newOrder },
     });
-
-    // Sincroniza localmente com segurança
-    safeWriteLocalJson((data) => {
-      if (data.gifts) {
-        data.gifts = data.gifts.map((g: any) => {
-          if (g.id === giftId) {
-            return { ...g, order: newOrder, updatedAt: new Date().toISOString() };
-          }
-          return g;
-        });
-        data.gifts.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-      }
-    });
-
     return { success: true };
   } catch (err: any) {
     console.error('Erro em updateGiftOrderItem:', err.message);
@@ -346,9 +308,9 @@ export async function makeReservation(giftId: string, personName: string, email:
       const reservation = await tx.reservation.create({
         data: {
           giftId,
-          personName,
-          email,
-          notes: notes || null,
+          personName: personName.trim(),
+          email: email.trim().toLowerCase(),
+          notes: notes ? notes.trim() : null,
         },
       });
 
@@ -368,6 +330,7 @@ export async function makeReservation(giftId: string, personName: string, email:
       settings: settings || null,
     };
   } catch (err: any) {
+    console.error('Erro em makeReservation:', err.message);
     throw err;
   }
 }
@@ -383,85 +346,118 @@ export async function cancelGiftReservation(giftId: string) {
     });
     return { success: true };
   } catch (err: any) {
+    console.error('Erro ao cancelar reserva:', err.message);
     throw err;
   }
 }
 
-export async function updateSystemSettings(formData: any) {
+export async function updateSystemSettings(data: any) {
   try {
     const existing = await prisma.systemSetting.findFirst();
+
+    const payload = {
+      coupleNames: data.coupleNames || 'Naila & Yuri',
+      siteTitle: data.siteTitle || 'Naila & Yuri | Chá de Panela',
+      siteDescription: data.siteDescription || null,
+      siteKeywords: data.siteKeywords || null,
+      faviconUrl: data.faviconUrl || '/monograma_popyn.png',
+      ogImageUrl: data.ogImageUrl || '/pre-wedding/DSC01267.webp',
+      pixKey: data.pixKey || null,
+      pixReceiver: data.pixReceiver || null,
+      pixCity: data.pixCity || null,
+      deliveryAddress: data.deliveryAddress || null,
+      showPrices: !!data.showPrices,
+    };
+
+    let settings;
     if (existing) {
-      const updated = await prisma.systemSetting.update({
+      settings = await prisma.systemSetting.update({
         where: { id: existing.id },
-        data: formData,
+        data: payload,
       });
-      return { success: true, settings: updated };
     } else {
-      const created = await prisma.systemSetting.create({
-        data: { id: 'default', ...formData },
+      settings = await prisma.systemSetting.create({
+        data: payload,
       });
-      return { success: true, settings: created };
     }
+
+    return { success: true, settings };
   } catch (err: any) {
+    console.error('Erro ao atualizar configurações:', err.message);
     throw err;
   }
 }
 
-export async function updateEventDetails(formData: any) {
+export async function updateEventDetails(data: any) {
   try {
-    const existing = await prisma.event.findFirst({ where: { type: 'PANTRY_PARTY' } });
-    const eventDate = formData.date ? new Date(formData.date) : new Date('2026-10-11T13:00:00.000Z');
+    let event = await prisma.event.findFirst({ where: { type: 'PANTRY_PARTY' } });
 
-    if (existing) {
-      const updated = await prisma.event.update({
-        where: { id: existing.id },
-        data: {
-          title: formData.title,
-          date: eventDate,
-          time: formData.time || null,
-          location: formData.location || null,
-          address: formData.address || null,
-          mapsUrl: formData.mapsUrl || null,
-          description: formData.description || null,
-        },
+    const payload = {
+      title: data.title || 'Chá de Panela Naila & Yuri',
+      type: 'PANTRY_PARTY' as const,
+      date: data.date ? new Date(data.date) : new Date('2026-10-11T13:00:00.000Z'),
+      time: data.time || '13:00',
+      location: data.location || 'ADVEC Templo Auxiliar',
+      address: data.address || 'Rua Montevidéu, 1191 - 4º andar.',
+      mapsUrl: data.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=Rua+Montevid%C3%A9u%2C+1191',
+      description: data.description || null,
+    };
+
+    let updatedEvent: any;
+    if (event) {
+      updatedEvent = await prisma.event.update({
+        where: { id: event.id },
+        data: payload,
+        include: { activities: true },
       });
-      return { success: true, event: updated };
     } else {
-      const created = await prisma.event.create({
-        data: {
-          type: 'PANTRY_PARTY',
-          title: formData.title,
-          date: eventDate,
-          time: formData.time || null,
-          location: formData.location || null,
-          address: formData.address || null,
-          mapsUrl: formData.mapsUrl || null,
-          description: formData.description || null,
-        },
+      updatedEvent = await prisma.event.create({
+        data: payload,
+        include: { activities: true },
       });
-      return { success: true, event: created };
     }
+
+    return {
+      success: true,
+      event: {
+        ...updatedEvent,
+        date: updatedEvent.date ? updatedEvent.date.toISOString() : '2026-10-11T13:00:00.000Z',
+        activities: sortActivitiesChronologically(updatedEvent.activities || []),
+      },
+    };
   } catch (err: any) {
+    console.error('Erro ao atualizar evento:', err.message);
     throw err;
   }
 }
 
-export async function saveGalleryPhoto(formData: any) {
-  const { id, url, caption, isHero } = formData;
+export async function saveGalleryPhoto(photoData: any) {
+  const { id, url, caption, isHero, order } = photoData;
   try {
     if (id) {
       const updated = await prisma.photo.update({
         where: { id },
-        data: { url, caption: caption || null, isHero: isHero || false },
+        data: {
+          caption: caption || null,
+          isHero: !!isHero,
+          order: order !== undefined ? Number(order) : undefined,
+        },
       });
       return { success: true, photo: updated };
     } else {
+      const count = await prisma.photo.count();
       const created = await prisma.photo.create({
-        data: { url, caption: caption || null, isHero: isHero || false },
+        data: {
+          url,
+          caption: caption || null,
+          isHero: !!isHero,
+          order: count + 1,
+        },
       });
       return { success: true, photo: created };
     }
   } catch (err: any) {
+    console.error('Erro ao salvar foto:', err.message);
     throw err;
   }
 }
@@ -471,33 +467,48 @@ export async function deleteGalleryPhoto(id: string) {
     await prisma.photo.delete({ where: { id } });
     return { success: true };
   } catch (err: any) {
+    console.error('Erro ao deletar foto:', err.message);
     throw err;
   }
 }
 
-export async function saveEventActivity(formData: any) {
-  const { id, title, description, time, order } = formData;
+export async function saveEventActivity(activityData: any) {
+  const { id, time, title, description } = activityData;
   try {
     let event = await prisma.event.findFirst({ where: { type: 'PANTRY_PARTY' } });
     if (!event) {
       event = await prisma.event.create({
-        data: { type: 'PANTRY_PARTY', title: 'Chá de Panela', date: new Date('2026-10-11T13:00:00.000Z') },
+        data: {
+          title: 'Chá de Panela Naila & Yuri',
+          type: 'PANTRY_PARTY',
+          date: new Date('2026-10-11T13:00:00.000Z'),
+        },
       });
     }
 
     if (id) {
       const updated = await prisma.activity.update({
         where: { id },
-        data: { title, description: description || null, time: time || null, order: order || 0 },
+        data: {
+          time: time.trim(),
+          title: title.trim(),
+          description: description ? description.trim() : null,
+        },
       });
       return { success: true, activity: updated };
     } else {
       const created = await prisma.activity.create({
-        data: { eventId: event.id, title, description: description || null, time: time || null, order: order || 0 },
+        data: {
+          eventId: event.id,
+          time: time.trim(),
+          title: title.trim(),
+          description: description ? description.trim() : null,
+        },
       });
       return { success: true, activity: created };
     }
   } catch (err: any) {
+    console.error('Erro ao salvar atividade:', err.message);
     throw err;
   }
 }
@@ -507,28 +518,10 @@ export async function deleteEventActivity(id: string) {
     await prisma.activity.delete({ where: { id } });
     return { success: true };
   } catch (err: any) {
+    console.error('Erro ao deletar atividade:', err.message);
     throw err;
   }
 }
-
-// ----------------------------------------------------
-// HELPERS DE CONFIRMAÇÃO DE PRESENÇA (RSVP)
-// ----------------------------------------------------
-
-export const getRsvpsData = cache(async () => {
-  try {
-    const rsvps = await prisma.rsvp.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (rsvps && rsvps.length > 0) return rsvps;
-  } catch (err) {
-    console.warn('Fallback para JSON em getRsvpsData:', (err as any)?.message);
-  }
-
-  const local = readLocalJson();
-  return local.rsvps || [];
-});
 
 export async function createRsvpEntry(formData: {
   name: string;
@@ -539,11 +532,8 @@ export async function createRsvpEntry(formData: {
   notes?: string;
 }) {
   const { name, email, hasCompanion, companionCount, companionNames, notes } = formData;
-  
-  let created: any = null;
-
   try {
-    created = await prisma.rsvp.create({
+    const created = await prisma.rsvp.create({
       data: {
         name: name.trim(),
         email: email.trim().toLowerCase(),
@@ -553,55 +543,20 @@ export async function createRsvpEntry(formData: {
         notes: notes?.trim() || null,
       },
     });
-  } catch (dbErr: any) {
-    console.warn('⚠️ Aviso: Falha ao inserir RSVP no Prisma/Neon, usando objeto fallback:', dbErr.message);
-    created = {
-      id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      hasCompanion: !!hasCompanion,
-      companionCount: hasCompanion ? Number(companionCount) || 1 : 0,
-      companionNames: companionNames?.trim() || null,
-      notes: notes?.trim() || null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+
+    return { success: true, rsvp: created };
+  } catch (err: any) {
+    console.error('Erro ao salvar RSVP no banco:', err.message);
+    throw err;
   }
-
-  // Sincroniza localmente com database.json apenas se não estiver em ambiente read-only (ex: Vercel)
-  safeWriteLocalJson((data) => {
-    if (!data.rsvps) data.rsvps = [];
-    data.rsvps.unshift({
-      id: created.id,
-      name: created.name,
-      email: created.email,
-      hasCompanion: created.hasCompanion,
-      companionCount: created.companionCount,
-      companionNames: created.companionNames,
-      notes: created.notes,
-      createdAt: typeof created.createdAt === 'string' ? created.createdAt : created.createdAt?.toISOString?.() || new Date().toISOString(),
-    });
-  });
-
-  return { success: true, rsvp: created };
 }
 
 export async function deleteRsvpEntry(id: string) {
   try {
-    await prisma.rsvp.delete({ where: { id } }).catch((e) => {
-      console.warn('Aviso ao deletar RSVP no prisma:', e.message);
-    });
-
-    // Sincroniza localmente com segurança
-    safeWriteLocalJson((data) => {
-      if (data.rsvps) {
-        data.rsvps = data.rsvps.filter((r: any) => r.id !== id);
-      }
-    });
-
+    await prisma.rsvp.delete({ where: { id } });
     return { success: true };
   } catch (err: any) {
     console.error('Erro ao deletar RSVP:', err.message);
-    return { success: true };
+    throw err;
   }
 }

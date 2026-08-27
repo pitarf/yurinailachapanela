@@ -35,7 +35,7 @@ export default async function PresencaPage() {
   ]);
 
   const coupleNames = settings?.coupleNames || 'Naila & Yuri';
-  const eventDate = typeof event?.date === 'string' ? event.date : event?.date?.toISOString?.() || '2026-10-11T13:00:00';
+  const eventDate = event?.date || '2026-10-11T13:00:00.000Z';
   const eventTime = event?.time || '13:00';
   const eventLocation = event?.location || 'ADVEC Templo Auxiliar';
   const eventAddress = event?.address || 'Rua Montevidéu, 1191 - 4º andar.';

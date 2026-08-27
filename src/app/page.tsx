@@ -48,7 +48,7 @@ export default async function Home() {
 
   // Dados de Fallback (Padrão) caso o banco ainda não tenha sido populado
   const eventTitle = event?.title || 'Chá de Panela';
-  const eventDate = typeof event?.date === 'string' ? event.date : event?.date?.toISOString?.() || '2026-10-11T13:00:00';
+  const eventDate = event?.date || '2026-10-11T13:00:00.000Z';
   const eventTime = event?.time || '13:00';
   const eventLocation = event?.location || 'ADVEC Templo auxiliar';
   const eventAddress = event?.address || 'Rua Montevidéu, 1191 - 4º andar.';
@@ -264,7 +264,7 @@ export default async function Home() {
 
       {/* Confirmação de Presença (RSVP) */}
       <RsvpSection
-        eventDate={typeof event?.date === 'string' ? event.date : event?.date?.toISOString?.() || '2026-10-11T13:00:00'}
+        eventDate={eventDate}
         eventTime={eventTime}
         eventLocation={eventLocation}
         eventAddress={eventAddress}
