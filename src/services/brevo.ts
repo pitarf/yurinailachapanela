@@ -346,7 +346,7 @@ function getBaseEmailLayout({
       <!-- FOOTER MINIMALISTA -->
       <div class="footer-section">
         <img src="${SITE_URL}/monograma_popyn.png" alt="N&Y" class="footer-monogram" />
-        <p class="footer-names">Naila Coutinho & Yuri Martins</p>
+        <p class="footer-names">Naila Coutinho & Yuri Nogueira</p>
         <p class="footer-tagline">Celebrando o início da nossa família ao lado de Cristo</p>
         <a href="${SITE_URL}" target="_blank" class="footer-link">Acessar Site Oficial</a>
       </div>

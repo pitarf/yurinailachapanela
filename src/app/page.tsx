@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { getEventData, getSystemSettings, getGiftsData, getPhotosData } from '@/lib/json-db';
+import { getEventData, getSystemSettings, getGiftsData, getPhotosData, getRsvpsData } from '@/lib/json-db';
 import Countdown from '@/components/Countdown';
 import Logo from '@/components/Logo';
 import GiftsList from '@/components/GiftsList';
@@ -7,6 +7,7 @@ import Gallery from '@/components/Gallery';
 import HeroSlider from '@/components/HeroSlider';
 import Header from '@/components/Header';
 import RsvpSection from '@/components/RsvpSection';
+import GuestbookSection from '@/components/GuestbookSection';
 import type { Metadata } from 'next';
 
 export const revalidate = 0; // Garantir dados sempre em tempo real
@@ -39,12 +40,36 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [event, settings, gifts, photos] = await Promise.all([
+  const [event, settings, gifts, photos, rsvps] = await Promise.all([
     getEventData(),
     getSystemSettings(),
     getGiftsData(),
     getPhotosData(),
+    getRsvpsData(),
   ]);
+
+  // Unifica recados de presenças e presentes
+  const guestMessages = [
+    ...rsvps
+      .filter((r: any) => r.notes && r.notes.trim() !== '')
+      .map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        notes: r.notes!,
+        type: 'presence' as const,
+        date: r.createdAt instanceof Date ? r.createdAt.toISOString() : String(r.createdAt),
+      })),
+    ...gifts
+      .filter((g: any) => g.reservation && g.reservation.notes && g.reservation.notes.trim() !== '')
+      .map((g: any) => ({
+        id: g.reservation!.id,
+        name: g.reservation!.personName,
+        notes: g.reservation!.notes!,
+        type: 'gift' as const,
+        giftName: g.name,
+        date: g.reservation!.createdAt instanceof Date ? g.reservation!.createdAt.toISOString() : String(g.reservation!.createdAt),
+      })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Dados de Fallback (Padrão) caso o banco ainda não tenha sido populado
   const eventTitle = event?.title || 'Chá de Panela';
