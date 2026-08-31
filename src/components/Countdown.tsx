@@ -53,7 +53,7 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
 
   if (isFinished) {
     return (
-      <span className="text-xs sm:text-sm font-sans font-semibold tracking-wider text-zinc-800 uppercase">
+      <span className="text-xs sm:text-sm font-sans font-semibold tracking-wider text-zinc-800 dark:text-zinc-200 uppercase">
         O Grande Dia Chegou! 🎉
       </span>
     );
@@ -67,20 +67,20 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
   ];
 
   return (
-    <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-600 select-none" suppressHydrationWarning>
-      <span className="text-[9px] sm:text-[10px] tracking-widest font-sans uppercase text-zinc-400 font-semibold mr-1">
+    <div className="inline-flex items-center gap-2 sm:gap-3 py-1 text-zinc-600 dark:text-zinc-300 select-none" suppressHydrationWarning>
+      <span className="text-[9px] sm:text-[10px] tracking-widest font-sans uppercase text-zinc-400 dark:text-zinc-500 font-semibold mr-1">
         Faltam:
       </span>
       {items.map((item, idx) => (
         <div key={item.label} className="inline-flex items-baseline gap-0.5">
-          <span className="font-serif text-base sm:text-lg font-medium text-zinc-900 tabular-nums" suppressHydrationWarning>
+          <span className="font-serif text-base sm:text-lg font-medium text-zinc-900 dark:text-white tabular-nums" suppressHydrationWarning>
             {item.value.toString().padStart(2, '0')}
           </span>
-          <span className="text-[9px] font-sans text-zinc-400 font-normal">
+          <span className="text-[9px] font-sans text-zinc-400 dark:text-zinc-400 font-normal">
             {item.label}
           </span>
           {idx < items.length - 1 && (
-            <span className="text-zinc-300 ml-1 text-xs select-none">•</span>
+            <span className="text-zinc-300 dark:text-zinc-600 ml-1 text-xs select-none">•</span>
           )}
         </div>
       ))}
